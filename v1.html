@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guitar Chord Identifier (Simplified)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            background-color: #f4f4f4;
+            color: #333;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 700px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .controls button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.1em;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: background-color 0.3s ease;
+        }
+        .controls button:hover {
+            background-color: #2980b9;
+        }
+        .controls button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        #status {
+            margin-top: 20px;
+            font-size: 1.1em;
+            color: #555;
+            min-height: 25px;
+        }
+        canvas {
+            background-color: #eee;
+            border: 1px solid #ccc;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+        #output {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+            min-height: 100px;
+            text-align: left;
+        }
+        #output h3 {
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        #output p {
+            margin: 5px 0;
+            font-size: 1.1em;
+        }
+        .disclaimer {
+            margin-top: 30px;
+            background-color: #fcecec;
+            border: 1px solid #e74c3c;
+            padding: 15px;
+            border-radius: 8px;
+            color: #c0392b;
+            font-size: 0.9em;
+            text-align: left;
+            width: 100%;
+            max-width: 700px;
+        }
+        .disclaimer h4 {
+            margin-top: 0;
+            color: #c0392b;
+        }
+        .disclaimer ul {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Guitar Chord Identifier (Simplified)</h1>
+
+    <div class="container">
+        <div class="controls">
+            <button id="startButton">Start Listening</button>
+            <button id="stopButton" disabled>Stop Listening</button>
+        </div>
+        <p id="status">Click "Start Listening" to begin.</p>
+        <canvas id="frequencyCanvas" width="600" height="200"></canvas>
+        <div id="output">
+            <h3>Detected Note: <span id="detectedNote">N/A</span></h3>
+            <p>Potential Chords (based on detected note):</p>
+            <ul id="chordSuggestions">
+                <li>Start listening to see suggestions...</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="disclaimer">
+        <h4>Important Disclaimer:</h4>
+        <p>This is a **simplified demonstration** of using the Web Audio API for basic audio input and monophonic (single note) pitch detection. It has significant limitations as a true "chord identifier":</p>
+        <ul>
+            <li>**Monophonic Detection Only:** This app primarily attempts to detect the *single loudest* (fundamental) pitch in the audio stream. It **cannot reliably identify multiple notes simultaneously** to form a chord.</li>
+            <li>**No Polyphonic Chord Recognition:** Identifying a full guitar chord (multiple notes played together) requires complex signal processing, harmonic analysis, or machine learning algorithms that are beyond the scope of this vanilla JavaScript example.</li>
+            <li>**Suggestions, Not Identification:** The "Potential Chords" listed are merely chords that *contain* the detected fundamental note, not an actual recognition of the chord being played.</li>
+            <li>**Accuracy Varies:** Pitch detection accuracy can be affected by microphone quality, background noise, instrument timbre, and how clearly the note is played.</li>
+        </ul>
+        <p>For robust, real-time polyphonic chord recognition, specialized libraries (e.g., Tone.js with specific DSP algorithms) or a backend service with advanced audio analysis would typically be required.</p>
+    </div>
+
+    <script>
+        const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
+        const statusDiv = document.getElementById('status');
+        const frequencyCanvas = document.getElementById('frequencyCanvas');
+        const detectedNoteSpan = document.getElementById('detectedNote');
+        const chordSuggestionsList = document.getElementById('chordSuggestions');
+        const canvasCtx = frequencyCanvas.getContext('2d');
+
+        let audioContext;
+        let analyser;
+        let microphone;
+        let animationId;
+        let isListening = false;
+
+        const MIN_FREQ = 60; // Ignore frequencies below this (e.g., hum)
+        const MAX_FREQ = 1200; // Ignore frequencies above this (e.g., high harmonics, noise)
+        const A4 = 440; // Standard tuning frequency for A4
+        const NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+
+        // Pre-calculated C4 frequency (MIDI 60)
+        const C4 = A4 * Math.pow(2, -9 / 12);
+
+        // --- Chord Data (Simplified) ---
+        // Maps a note (e.g., "C") to a list of common chords where that note is the root.
+        // This is a *very simplified* approach for suggestions, not true chord identification.
+        const CHORDS_BY_ROOT = {
+            "C": ["C Major", "C Minor", "C7", "CMaj7"],
+            "C#": ["C# Major", "C# Minor", "C#7"],
+            "D": ["D Major", "D Minor", "D7", "DMaj7"],
+            "D#": ["D# Major", "D# Minor", "D#7"],
+            "E": ["E Major", "E Minor", "E7", "EMaj7"],
+            "F": ["F Major", "F Minor", "F7", "FMaj7"],
+            "F#": ["F# Major", "F# Minor", "F#7"],
+            "G": ["G Major", "G Minor", "G7", "GMaj7"],
+            "G#": ["G# Major", "G# Minor", "G#7"],
+            "A": ["A Major", "A Minor", "A7", "AMaj7"],
+            "A#": ["A# Major", "A# Minor", "A#7"],
+            "B": ["B Major", "B Minor", "B7", "BMaj7"]
+        };
+
+        // --- Audio Processing Functions ---
+
+        function setupAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 2048; // A good balance for frequency resolution
+                analyser.minDecibels = -90;
+                analyser.maxDecibels = -10;
+                analyser.smoothingTimeConstant = 0.8; // Smoother transitions
+            }
+        }
+
+        async function startListening() {
+            if (isListening) return;
+
+            setupAudioContext();
+            statusDiv.textContent = 'Requesting microphone access...';
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                microphone = audioContext.createMediaStreamSource(stream);
+                microphone.connect(analyser);
+                // analyser.connect(audioContext.destination); // Connect analyser to destination if you want to hear it
+
+                isListening = true;
+                startButton.disabled = true;
+                stopButton.disabled = false;
+                statusDiv.textContent = 'Listening...';
+                drawFrequency();
+
+            } catch (err) {
+                statusDiv.textContent = `Error accessing microphone: ${err.message}. Please allow microphone access.`;
+                console.error('Error accessing microphone:', err);
+                startButton.disabled = false;
+                stopButton.disabled = true;
+            }
+        }
+
+        function stopListening() {
+            if (!isListening) return;
+
+            cancelAnimationFrame(animationId);
+            if (microphone) {
+                microphone.disconnect();
+                microphone.mediaStream.getTracks().forEach(track => track.stop());
+                microphone = null;
+            }
+            if (audioContext && audioContext.state !== 'closed') {
+                audioContext.close().then(() => {
+                    audioContext = null;
+                    analyser = null;
+                    console.log('AudioContext closed.');
+                });
+            }
+
+            isListening = false;
+            startButton.disabled = false;
+            stopButton.disabled = true;
+            statusDiv.textContent = 'Stopped listening.';
+            detectedNoteSpan.textContent = 'N/A';
+            chordSuggestionsList.innerHTML = '<li>Start listening to see suggestions...</li>';
+            clearCanvas();
+        }
+
+        function drawFrequency() {
+            animationId = requestAnimationFrame(drawFrequency);
+
+            if (!analyser || !isListening) return;
+
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            analyser.getByteFrequencyData(dataArray);
+
+            clearCanvas();
+
+            const barWidth = (frequencyCanvas.width / bufferLength) * 2.5; // Adjust width for better visualization
+            let x = 0;
+
+            // Visualization
+            for (let i = 0; i < bufferLength; i++) {
+                const barHeight = dataArray[i];
+                canvasCtx.fillStyle = `rgb(${barHeight + 100}, 50, 50)`;
+                canvasCtx.fillRect(x, frequencyCanvas.height - barHeight / 2, barWidth, barHeight / 2); // Draw from bottom
+                x += barWidth + 1;
+            }
+
+            // Pitch Detection
+            const fundamentalFrequency = getFundamentalFrequency(dataArray, audioContext.sampleRate, analyser.fftSize);
+            if (fundamentalFrequency) {
+                const noteInfo = frequencyToNote(fundamentalFrequency);
+                if (noteInfo) {
+                    detectedNoteSpan.textContent = `${noteInfo.name}${noteInfo.octave} (${fundamentalFrequency.toFixed(2)} Hz)`;
+                    updateChordSuggestions(noteInfo.name);
+                } else {
+                    detectedNoteSpan.textContent = `N/A (Freq: ${fundamentalFrequency.toFixed(2)} Hz)`;
+                    updateChordSuggestions(null);
+                }
+            } else {
+                detectedNoteSpan.textContent = 'N/A';
+                updateChordSuggestions(null);
+            }
+        }
+
+        function clearCanvas() {
+            canvasCtx.clearRect(0, 0, frequencyCanvas.width, frequencyCanvas.height);
+            canvasCtx.fillStyle = '#eee';
+            canvasCtx.fillRect(0, 0, frequencyCanvas.width, frequencyCanvas.height);
+        }
+
+        function getFundamentalFrequency(dataArray, sampleRate, fftSize) {
+            let maxAmplitude = 0;
+            let maxIndex = -1;
+
+            // Iterate over the frequency spectrum to find the strongest peak
+            // We only care about frequencies within the musical range
+            for (let i = 0; i < dataArray.length; i++) {
+                const freq = i * sampleRate / fftSize;
+                if (freq >= MIN_FREQ && freq <= MAX_FREQ) {
+                    if (dataArray[i] > maxAmplitude) {
+                        maxAmplitude = dataArray[i];
+                        maxIndex = i;
+                    }
+                }
+            }
+
+            // A threshold to avoid detecting very faint sounds or silence as a note
+            const THRESHOLD = 100; // This value might need adjustment based on microphone and environment
+            if (maxAmplitude < THRESHOLD || maxIndex === -1) {
+                return null;
+            }
+
+            return maxIndex * sampleRate / fftSize;
+        }
+
+        function frequencyToNote(frequency) {
+            if (frequency === 0) return null;
+
+            // Calculate the number of semitones from C4 (MIDI note 60)
+            const noteNum = 12 * (Math.log(frequency / C4) / Math.log(2));
+            const roundedNoteNum = Math.round(noteNum);
+
+            // Determine octave (C4 is 0 for our internal calculation, actual C4 is 4)
+            const octave = Math.floor(roundedNoteNum / 12) + 4;
+
+            // Get the note name
+            const noteName = NOTES[(roundedNoteNum % 12 + 12) % 12]; // Ensure positive modulo
+
+            return {
+                name: noteName,
+                octave: octave,
+                frequency: frequency,
+                midi: roundedNoteNum + 60
+            };
+        }
+
+        function updateChordSuggestions(rootNote) {
+            chordSuggestionsList.innerHTML = '';
+            if (rootNote && CHORDS_BY_ROOT[rootNote]) {
+                CHORDS_BY_ROOT[rootNote].forEach(chord => {
+                    const li = document.createElement('li');
+                    li.textContent = chord;
+                    chordSuggestionsList.appendChild(li);
+                });
+                if (CHORDS_BY_ROOT[rootNote].length === 0) {
+                     const li = document.createElement('li');
+                     li.textContent = `No common chords found starting with ${rootNote}.`;
+                     chordSuggestionsList.appendChild(li);
+                }
+            } else {
+                const li = document.createElement('li');
+                li.textContent = 'No clear note detected or no suggestions available.';
+                chordSuggestionsList.appendChild(li);
+            }
+        }
+
+        // --- Event Listeners ---
+        startButton.addEventListener('click', startListening);
+        stopButton.addEventListener('click', stopListening);
+
+        // Initial state
+        clearCanvas();
+    </script>
+</body>
+</html>

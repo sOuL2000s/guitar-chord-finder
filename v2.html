@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Guitar Chord Identifier</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            background-color: #e8f0f7;
+            color: #333;
+            padding: 20px;
+            box-sizing: border-box;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 2.2em;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+            margin-bottom: 25px;
+            border: 1px solid #dcdcdc;
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        .controls button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            font-size: 1.15em;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 0 10px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .controls button:hover:not(:disabled) {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        .controls button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        #status {
+            margin-top: 15px;
+            font-size: 1em;
+            color: #555;
+            min-height: 25px;
+        }
+        canvas {
+            background-color: #f8f8f8;
+            border: 1px solid #c0d9ed;
+            margin-top: 25px;
+            border-radius: 8px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .output-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-top: 25px;
+            text-align: left;
+            width: 100%;
+        }
+        .output-box {
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            flex: 1;
+            min-width: 300px;
+            margin: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #d6e3ea;
+        }
+        .output-box h3 {
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-size: 1.3em;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 8px;
+        }
+        .output-box p, .output-box ul {
+            font-size: 1em;
+            color: #34495e;
+            margin-bottom: 8px;
+        }
+        .output-box ul {
+            list-style-type: none;
+            padding-left: 0;
+            max-height: 150px;
+            overflow-y: auto;
+            border-top: 1px dashed #cfcfcf;
+            padding-top: 10px;
+        }
+        .output-box li {
+            padding: 4px 0;
+            border-bottom: 1px dotted #e0e0e0;
+        }
+        .output-box li:last-child {
+            border-bottom: none;
+        }
+        .disclaimer {
+            margin-top: 35px;
+            background-color: #fdf5e6;
+            border: 1px solid #e7b100;
+            padding: 20px;
+            border-radius: 10px;
+            color: #b08d00;
+            font-size: 0.95em;
+            text-align: left;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        }
+        .disclaimer h4 {
+            margin-top: 0;
+            color: #8c6e00;
+            font-size: 1.1em;
+        }
+        .disclaimer ul {
+            margin-top: 15px;
+            padding-left: 25px;
+            list-style-type: disc;
+        }
+        .disclaimer li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Advanced Guitar Chord Identifier</h1>
+
+    <div class="container">
+        <div class="controls">
+            <button id="startButton">Start Listening</button>
+            <button id="stopButton" disabled>Stop Listening</button>
+        </div>
+        <p id="status">Click "Start Listening" to begin audio analysis.</p>
+
+        <canvas id="frequencyCanvas" width="750" height="200"></canvas>
+
+        <div class="output-section">
+            <div class="output-box">
+                <h3>Dominant Pitch (Monophonic)</h3>
+                <p>Detected Note: <span id="detectedNote">N/A</span></p>
+                <p>Frequency: <span id="detectedFreq">N/A</span> Hz</p>
+                <p>Confidence: <span id="pitchConfidence">N/A</span></p>
+            </div>
+            <div class="output-box">
+                <h3>Chord Guess (Polyphonic Hint)</h3>
+                <p>Most Likely Chord: <strong id="likelyChord">N/A</strong></p>
+                <p>Similarity Score: <span id="chordSimilarity">N/A</span></p>
+                <p>Top 3 Matches:</p>
+                <ul id="chordSuggestions">
+                    <li>Start listening for suggestions...</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="disclaimer">
+        <h4>Important Disclaimer: Advanced Frontend Limitations</h4>
+        <p>This application employs more sophisticated Digital Signal Processing (DSP) techniques like AutoCorrelation for pitch detection and a simplified "Chroma Feature" extraction for polyphonic chord hinting, aiming for the best possible accuracy solely within the browser's frontend environment.</p>
+        <p>However, it still faces significant challenges:</p>
+        <ul>
+            <li>**Polyphonic Complexity:** Accurately identifying multiple notes in a real-time guitar chord (polyphonic recognition) is inherently difficult. This app uses chroma features as a statistical fingerprint, but it's not a perfect solution. Overtones, rapid strums, and complex voicings can confuse the algorithm.</li>
+            <li>**Performance:** All audio analysis runs on the main browser thread via `requestAnimationFrame`. While optimized, very fast or complex audio streams might cause performance dips. For truly heavy DSP, `AudioWorklet` or WebAssembly is preferred but significantly increases code complexity.</li>
+            <li>**Sensitivity:** Microphone quality, ambient noise, and the clarity of the played chord greatly influence results. Faint or distorted sounds are hard to parse.</li>
+            <li>**"Guess" vs. "Detection":** The "Chord Guess" relies on comparing spectral fingerprints. It's a statistical best-fit, not a definitive detection like a human ear.</li>
+        </ul>
+        <p>For truly professional-grade, highly accurate polyphonic chord recognition, dedicated software, specialized libraries (often compiled from C/C++ to WebAssembly), or machine learning models (e.g., via TensorFlow.js) trained on vast datasets would be necessary.</p>
+    </div>
+
+    <script>
+        const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
+        const statusDiv = document.getElementById('status');
+        const frequencyCanvas = document.getElementById('frequencyCanvas');
+        const detectedNoteSpan = document.getElementById('detectedNote');
+        const detectedFreqSpan = document.getElementById('detectedFreq');
+        const pitchConfidenceSpan = document.getElementById('pitchConfidence');
+        const likelyChordSpan = document.getElementById('likelyChord');
+        const chordSimilaritySpan = document.getElementById('chordSimilarity');
+        const chordSuggestionsList = document.getElementById('chordSuggestions');
+        const canvasCtx = frequencyCanvas.getContext('2d');
+
+        let audioContext;
+        let analyser;
+        let microphone;
+        let animationId;
+        let isListening = false;
+        let audioProcessor; // For ScriptProcessorNode or AudioWorklet
+
+        // --- Configuration Constants ---
+        const SAMPLE_RATE = 44100; // Standard audio sample rate
+        const FFT_SIZE = 4096; // Larger FFT for better frequency resolution
+        const AUTO_CORRELATION_BUFFER_SIZE = 2048; // Buffer for pitch detection
+        const MIN_FREQ_HZ = 60; // Ignore frequencies below this (e.g., hum, low E string is ~82Hz)
+        const MAX_FREQ_HZ = 1200; // Ignore frequencies above this (e.g., high harmonics, noise)
+        const PITCH_MIN_CONFIDENCE = 0.85; // Confidence threshold for pitch detection
+        const CHORD_MATCH_THRESHOLD = 0.5; // Similarity threshold for a chord match
+
+        const A4 = 440; // Standard tuning frequency for A4
+        const NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+
+        // --- Pre-calculated C0 Frequency (lowest C) ---
+        // MIDI note 0 (C-1) is ~8.17 Hz. C4 is MIDI 60.
+        const C0_FREQ = A4 * Math.pow(2, -57 / 12);
+
+        // --- Chord Definitions (Root notes and their constituent intervals) ---
+        // Each chord is defined by its root and the semitone intervals from that root.
+        // Also pre-compute its 12-element chroma vector for matching.
+        const CHORD_DEFINITIONS = {
+            "C Major":        { intervals: [0, 4, 7], chroma: null }, // C, E, G
+            "C Minor":        { intervals: [0, 3, 7], chroma: null }, // C, Eb, G
+            "C7":             { intervals: [0, 4, 7, 10], chroma: null }, // C, E, G, Bb
+            "CMaj7":          { intervals: [0, 4, 7, 11], chroma: null }, // C, E, G, B
+            "D Major":        { intervals: [0, 4, 7], chroma: null }, // D, F#, A
+            "D Minor":        { intervals: [0, 3, 7], chroma: null }, // D, F, A
+            "D7":             { intervals: [0, 4, 7, 10], chroma: null }, // D, F#, A, C
+            "E Major":        { intervals: [0, 4, 7], chroma: null }, // E, G#, B
+            "E Minor":        { intervals: [0, 3, 7], chroma: null }, // E, G, B
+            "E7":             { intervals: [0, 4, 7, 10], chroma: null }, // E, G#, B, D
+            "F Major":        { intervals: [0, 4, 7], chroma: null }, // F, A, C
+            "F Minor":        { intervals: [0, 3, 7], chroma: null }, // F, Ab, C
+            "F7":             { intervals: [0, 4, 7, 10], chroma: null }, // F, A, C, Eb
+            "G Major":        { intervals: [0, 4, 7], chroma: null }, // G, B, D
+            "G Minor":        { intervals: [0, 3, 7], chroma: null }, // G, Bb, D
+            "G7":             { intervals: [0, 4, 7, 10], chroma: null }, // G, B, D, F
+            "A Major":        { intervals: [0, 4, 7], chroma: null }, // A, C#, E
+            "A Minor":        { intervals: [0, 3, 7], chroma: null }, // A, C, E
+            "A7":             { intervals: [0, 4, 7, 10], chroma: null }, // A, C#, E, G
+            "B Major":        { intervals: [0, 4, 7], chroma: null }, // B, D#, F#
+            "B Minor":        { intervals: [0, 3, 7], chroma: null }, // B, D, F#
+            "B7":             { intervals: [0, 4, 7, 10], chroma: null }, // B, D#, F#, A
+            // Add more chords as needed for broader recognition
+        };
+
+        // Pre-compute chroma vectors for all chords in the dictionary
+        function precomputeChromaVectors() {
+            for (const chordName in CHORD_DEFINITIONS) {
+                const chord = CHORD_DEFINITIONS[chordName];
+                const chromaVector = new Array(12).fill(0);
+                const rootNoteIndex = NOTES.indexOf(chordName.split(' ')[0].replace('#', '')); // e.g., 'C' from 'C Major'
+
+                chord.intervals.forEach(interval => {
+                    const noteInChordIndex = (rootNoteIndex + interval) % 12;
+                    chromaVector[noteInChordIndex] = 1; // Mark presence of note
+                });
+                chord.chroma = normalizeChroma(chromaVector); // Normalize for similarity comparison
+            }
+        }
+        precomputeChromaVectors();
+
+        // --- Audio Processing Functions ---
+
+        function setupAudioContext() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: SAMPLE_RATE });
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = FFT_SIZE;
+                analyser.minDecibels = -90;
+                analyser.maxDecibels = -10;
+                analyser.smoothingTimeConstant = 0.8;
+
+                // Using ScriptProcessorNode for time-domain data for ACF.
+                // Note: ScriptProcessorNode is deprecated, but widely supported and simpler for direct mic input.
+                // For modern apps, AudioWorklet would be used, but is more complex to set up in a single file.
+                audioProcessor = audioContext.createScriptProcessor(AUTO_CORRELATION_BUFFER_SIZE, 1, 1);
+                audioProcessor.onaudioprocess = handleAudioProcess;
+                audioProcessor.connect(audioContext.destination); // Connect to output (not strictly needed, but common)
+            }
+        }
+
+        async function startListening() {
+            if (isListening) return;
+
+            setupAudioContext();
+            statusDiv.textContent = 'Requesting microphone access...';
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                microphone = audioContext.createMediaStreamSource(stream);
+
+                // Connect microphone to both analyser (for FFT/visualization) and audioProcessor (for ACF)
+                microphone.connect(analyser);
+                microphone.connect(audioProcessor);
+
+                isListening = true;
+                startButton.disabled = true;
+                stopButton.disabled = false;
+                statusDiv.textContent = 'Listening...';
+                drawVisualization();
+
+            } catch (err) {
+                statusDiv.textContent = `Error accessing microphone: ${err.message}. Please allow microphone access.`;
+                console.error('Error accessing microphone:', err);
+                startButton.disabled = false;
+                stopButton.disabled = true;
+            }
+        }
+
+        function stopListening() {
+            if (!isListening) return;
+
+            cancelAnimationFrame(animationId);
+            if (microphone) {
+                microphone.disconnect();
+                microphone.mediaStream.getTracks().forEach(track => track.stop());
+                microphone = null;
+            }
+            if (audioProcessor) {
+                audioProcessor.disconnect();
+                audioProcessor.onaudioprocess = null;
+                audioProcessor = null;
+            }
+            if (audioContext && audioContext.state !== 'closed') {
+                audioContext.close().then(() => {
+                    audioContext = null;
+                    analyser = null;
+                    console.log('AudioContext closed.');
+                });
+            }
+
+            isListening = false;
+            startButton.disabled = false;
+            stopButton.disabled = true;
+            statusDiv.textContent = 'Stopped listening.';
+            detectedNoteSpan.textContent = 'N/A';
+            detectedFreqSpan.textContent = 'N/A';
+            pitchConfidenceSpan.textContent = 'N/A';
+            likelyChordSpan.textContent = 'N/A';
+            chordSimilaritySpan.textContent = 'N/A';
+            chordSuggestionsList.innerHTML = '<li>Start listening for suggestions...</li>';
+            clearCanvas();
+        }
+
+        function clearCanvas() {
+            canvasCtx.clearRect(0, 0, frequencyCanvas.width, frequencyCanvas.height);
+            canvasCtx.fillStyle = '#f8f8f8';
+            canvasCtx.fillRect(0, 0, frequencyCanvas.width, frequencyCanvas.height);
+        }
+
+        // --- Main Audio Loop & Analysis ---
+        const timeDomainData = new Float32Array(AUTO_CORRELATION_BUFFER_SIZE);
+        const frequencyData = new Uint8Array(FFT_SIZE / 2); // getByteFrequencyData returns half FFT_SIZE
+
+        function handleAudioProcess(event) {
+            // Get time domain data for pitch detection (ACF)
+            event.inputBuffer.getChannelData(0, timeDomainData); // Use Float32Array
+            const pitchResult = autoCorrelate(timeDomainData, audioContext.sampleRate);
+
+            // Get frequency domain data for spectrum visualization and chroma features
+            analyser.getByteFrequencyData(frequencyData);
+
+            // Update UI elements from this loop for more responsiveness
+            updateOutput(pitchResult, frequencyData);
+        }
+
+        function drawVisualization() {
+            animationId = requestAnimationFrame(drawVisualization);
+
+            if (!analyser || !isListening) return;
+
+            clearCanvas();
+
+            const bufferLength = frequencyData.length; // analyser.frequencyBinCount
+            const barWidth = (frequencyCanvas.width / bufferLength) * 2;
+            let x = 0;
+
+            for (let i = 0; i < bufferLength; i++) {
+                const barHeight = frequencyData[i];
+                // Visualize frequencies relevant to music
+                const freq = i * (audioContext.sampleRate / FFT_SIZE);
+                if (freq >= MIN_FREQ_HZ && freq <= MAX_FREQ_HZ) {
+                     canvasCtx.fillStyle = `hsl(${barHeight + 180}, 70%, 50%)`; // Hue based on amplitude
+                     canvasCtx.fillRect(x, frequencyCanvas.height - barHeight / 1.5, barWidth, barHeight / 1.5);
+                }
+                x += barWidth + 1;
+            }
+        }
+
+        // --- Pitch Detection: AutoCorrelation Function (ACF) ---
+        // Basic implementation of Normalized Square Difference Function (NSDF) which is robust for pitch.
+        function autoCorrelate(buffer, sampleRate) {
+            const bufferLength = buffer.length;
+            const rms = Math.sqrt(buffer.reduce((sum, val) => sum + val * val, 0) / bufferLength);
+
+            if (rms < 0.01) { // Threshold for silence/noise
+                return { frequency: 0, confidence: 0 };
+            }
+
+            const r = new Array(bufferLength).fill(0);
+            const acf = new Array(bufferLength).fill(0);
+
+            // Calculate autocorrelation function
+            for (let i = 0; i < bufferLength; i++) {
+                for (let j = 0; j < bufferLength - i; j++) {
+                    acf[i] += buffer[j] * buffer[j + i];
+                }
+            }
+
+            // Find peak in ACF
+            let d = 0; // The period in samples
+            let maxVal = -1;
+
+            // Search for the peak in a relevant frequency range (e.g., human voice/guitar)
+            // Convert min/max freq to min/max period in samples
+            const minPeriod = sampleRate / MAX_FREQ_HZ;
+            const maxPeriod = sampleRate / MIN_FREQ_HZ;
+
+            for (let i = Math.floor(minPeriod); i <= Math.floor(maxPeriod) && i < bufferLength; i++) {
+                if (acf[i] > maxVal) {
+                    maxVal = acf[i];
+                    d = i;
+                }
+            }
+
+            if (d === 0) { // No peak found
+                return { frequency: 0, confidence: 0 };
+            }
+
+            // Refine peak with parabolic interpolation (optional, but improves accuracy)
+            let x0 = (d < 1) ? d : d - 1;
+            let x2 = (d + 1 < bufferLength) ? d + 1 : d;
+            if (x0 === d) x0++;
+            if (x2 === d) x2--;
+            if (acf[x0] === 0 || acf[x2] === 0) return { frequency: sampleRate / d, confidence: 0.5 };
+
+            const a = (acf[x0] + acf[x2] - 2 * acf[d]) / 2;
+            const b = (acf[x2] - acf[x0]) / 2;
+            if (a) {
+                d -= b / (2 * a);
+            }
+
+            const frequency = sampleRate / d;
+
+            // Simple confidence: how prominent the peak is compared to its neighbors
+            let confidence = (maxVal > 0) ? (maxVal / acf[0]) : 0; // Normalized to 0-1
+            // Further refine confidence based on NSDF-like properties
+            if (confidence > 1) confidence = 1; // Clamp
+
+            return { frequency: frequency, confidence: confidence };
+        }
+
+        // --- Note & Chord Recognition Logic ---
+
+        function frequencyToNote(frequency) {
+            if (frequency <= 0) return null;
+
+            // Calculate the number of semitones from C0
+            const noteNum = 12 * (Math.log(frequency / C0_FREQ) / Math.log(2));
+            const roundedNoteNum = Math.round(noteNum);
+
+            // Determine octave (C0 is -1, C4 is 3)
+            const octave = Math.floor(roundedNoteNum / 12) - 1;
+
+            // Get the note name
+            const noteName = NOTES[(roundedNoteNum % 12 + 12) % 12]; // Ensure positive modulo
+
+            return {
+                name: noteName,
+                octave: octave,
+                frequency: frequency,
+                midi: roundedNoteNum
+            };
+        }
+
+        // Extracts a 12-element chroma vector from frequency data
+        function extractChromaVector(frequencyData, sampleRate, fftSize) {
+            const chroma = new Array(12).fill(0);
+            const binWidth = sampleRate / fftSize;
+
+            for (let i = 0; i < frequencyData.length; i++) {
+                const amplitude = frequencyData[i];
+                if (amplitude < 50) continue; // Ignore very low amplitudes as noise
+
+                const freq = i * binWidth;
+                if (freq < MIN_FREQ_HZ || freq > MAX_FREQ_HZ) continue;
+
+                // Calculate semitone index from C0
+                if (freq > 0) {
+                    const noteNum = 12 * (Math.log(freq / C0_FREQ) / Math.log(2));
+                    const chromaIndex = Math.round(noteNum) % 12; // Get the note class (0-11)
+                    chroma[chromaIndex] += amplitude; // Add energy to the corresponding chroma bin
+                }
+            }
+            return normalizeChroma(chroma);
+        }
+
+        // Normalize a chroma vector to unit length (for cosine similarity)
+        function normalizeChroma(chromaVector) {
+            const sumOfSquares = chromaVector.reduce((sum, val) => sum + val * val, 0);
+            const magnitude = Math.sqrt(sumOfSquares);
+            if (magnitude === 0) return new Array(12).fill(0);
+            return chromaVector.map(val => val / magnitude);
+        }
+
+        // Calculate cosine similarity between two chroma vectors
+        function cosineSimilarity(vecA, vecB) {
+            let dotProduct = 0;
+            let magnitudeA = 0;
+            let magnitudeB = 0;
+            for (let i = 0; i < 12; i++) {
+                dotProduct += vecA[i] * vecB[i];
+                magnitudeA += vecA[i] * vecA[i];
+                magnitudeB += vecB[i] * vecB[i];
+            }
+            magnitudeA = Math.sqrt(magnitudeA);
+            magnitudeB = Math.sqrt(magnitudeB);
+
+            if (magnitudeA === 0 || magnitudeB === 0) return 0;
+            return dotProduct / (magnitudeA * magnitudeB);
+        }
+
+        function findBestChordMatch(liveChroma) {
+            let bestMatch = { chord: "N/A", similarity: 0 };
+            const allMatches = [];
+
+            for (const chordName in CHORD_DEFINITIONS) {
+                const chordChroma = CHORD_DEFINITIONS[chordName].chroma;
+                const similarity = cosineSimilarity(liveChroma, chordChroma);
+                allMatches.push({ chord: chordName, similarity: similarity });
+
+                if (similarity > bestMatch.similarity) {
+                    bestMatch = { chord: chordName, similarity: similarity };
+                }
+            }
+
+            // Sort matches by similarity in descending order
+            allMatches.sort((a, b) => b.similarity - a.similarity);
+            return { bestMatch, topMatches: allMatches.slice(0, 3) }; // Return best and top 3
+        }
+
+
+        // --- Update UI ---
+        function updateOutput(pitchResult, frequencyData) {
+            // Update Monophonic Pitch
+            if (pitchResult.confidence > PITCH_MIN_CONFIDENCE && pitchResult.frequency >= MIN_FREQ_HZ && pitchResult.frequency <= MAX_FREQ_HZ) {
+                const noteInfo = frequencyToNote(pitchResult.frequency);
+                if (noteInfo) {
+                    detectedNoteSpan.textContent = `${noteInfo.name}${noteInfo.octave}`;
+                    detectedFreqSpan.textContent = pitchResult.frequency.toFixed(2);
+                    pitchConfidenceSpan.textContent = (pitchResult.confidence * 100).toFixed(1) + '%';
+                } else {
+                    detectedNoteSpan.textContent = 'N/A';
+                    detectedFreqSpan.textContent = 'N/A';
+                    pitchConfidenceSpan.textContent = 'N/A';
+                }
+            } else {
+                detectedNoteSpan.textContent = 'N/A';
+                detectedFreqSpan.textContent = 'N/A';
+                pitchConfidenceSpan.textContent = 'N/A';
+            }
+
+            // Update Polyphonic Chord Guess
+            const liveChroma = extractChromaVector(frequencyData, audioContext.sampleRate, FFT_SIZE);
+            const { bestMatch, topMatches } = findBestChordMatch(liveChroma);
+
+            if (bestMatch.similarity > CHORD_MATCH_THRESHOLD) {
+                likelyChordSpan.textContent = bestMatch.chord;
+                chordSimilaritySpan.textContent = (bestMatch.similarity * 100).toFixed(1) + '%';
+                chordSuggestionsList.innerHTML = '';
+                topMatches.forEach(match => {
+                    if (match.similarity > CHORD_MATCH_THRESHOLD * 0.7) { // Only show somewhat confident matches
+                        const li = document.createElement('li');
+                        li.textContent = `${match.chord} (${(match.similarity * 100).toFixed(1)}%)`;
+                        chordSuggestionsList.appendChild(li);
+                    }
+                });
+                if (chordSuggestionsList.children.length === 0) {
+                     const li = document.createElement('li');
+                     li.textContent = 'No confident chord matches found.';
+                     chordSuggestionsList.appendChild(li);
+                }
+            } else {
+                likelyChordSpan.textContent = 'N/A';
+                chordSimilaritySpan.textContent = 'N/A';
+                chordSuggestionsList.innerHTML = '<li>No confident chord matches found.</li>';
+            }
+        }
+
+
+        // --- Event Listeners ---
+        startButton.addEventListener('click', startListening);
+        stopButton.addEventListener('click', stopListening);
+
+        // Initial state
+        clearCanvas();
+    </script>
+</body>
+</html>

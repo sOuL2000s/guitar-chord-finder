@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guitar Chord & Note Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --primary-hover-color: #2980b9;
+            --secondary-color: #2c3e50;
+            --background-color: #eef4f8;
+            --card-background: #ffffff;
+            --text-color: #34495e;
+            --light-text-color: #7f8c8d;
+            --border-color: #dce4eb;
+            --warning-background: #fdf5e6;
+            --warning-border: #e7b100;
+            --warning-text: #b08d00;
+            --danger-background: #fcecec;
+            --danger-border: #e74c3c;
+            --danger-text: #c0392b;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            padding: 20px;
+            box-sizing: border-box;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        h1, h2, h3, h4 {
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        h1 { font-size: 2.5em; margin-bottom: 30px; }
+        h2 { font-size: 2em; margin-bottom: 25px; }
+        h3 { font-size: 1.5em; margin-bottom: 15px; }
+
+        nav {
+            background-color: var(--secondary-color);
+            width: 100%;
+            max-width: 900px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            padding: 10px 0;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            margin: 0 5px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-weight: 500;
+            font-size: 1.1em;
+        }
+
+        nav a:hover {
+            background-color: var(--primary-hover-color);
+            transform: translateY(-2px);
+        }
+
+        nav a.active {
+            background-color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .page-content {
+            display: none; /* Hidden by default */
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+
+        .container {
+            background-color: var(--card-background);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            text-align: center;
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+            box-sizing: border-box;
+        }
+
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .controls button,
+        .controls select,
+        .controls input[type="number"] {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.1em;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            font-family: 'Roboto', sans-serif;
+            -webkit-appearance: none; /* For select/input styling */
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        .controls button:hover:not(:disabled),
+        .controls select:hover:not(:disabled),
+        .controls input[type="number"]:hover:not(:disabled) {
+            background-color: var(--primary-hover-color);
+            transform: translateY(-2px);
+        }
+
+        .controls button:disabled,
+        .controls select:disabled,
+        .controls input[type="number"]:disabled {
+            background-color: var(--light-text-color);
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .controls select,
+        .controls input[type="number"] {
+            padding: 10px 15px; /* Adjust padding for selects/inputs */
+            background-color: #f0f8ff; /* Lighter background for inputs */
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            min-width: 100px; /* Ensure a minimum width */
+        }
+        .controls select {
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%232c3e50%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13.6-6.4H18.9c-5%200-9.7%202-13.6%206.4-7.8%207.9-7.8%2020.7%200%2028.5l127.8%20127.9c4%204%209.2%206.3%2014.3%206.3s10.3-2.3%2014.3-6.3L287%2097.9c7.8-7.7%207.8-20.5.1-28.5z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 12px;
+            padding-right: 30px; /* Make space for the arrow */
+        }
+
+        #status {
+            margin-top: 15px;
+            font-size: 1em;
+            color: var(--light-text-color);
+            min-height: 25px;
+        }
+
+        canvas {
+            background-color: #fcfdfe;
+            border: 1px solid var(--border-color);
+            margin-top: 25px;
+            border-radius: 8px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+            width: 100%; /* Make canvas responsive */
+            max-width: 750px; /* But keep max width */
+        }
+
+        .output-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center; /* Center boxes on small screens */
+            gap: 20px;
+            margin-top: 25px;
+            text-align: left;
+            width: 100%;
+        }
+
+        .output-box {
+            background-color: #ecf6fb;
+            padding: 20px;
+            border-radius: 8px;
+            flex: 1;
+            min-width: 280px; /* Adjusted min-width for better responsiveness */
+            max-width: 48%; /* Allow two columns */
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid #d6e3ea;
+            box-sizing: border-box;
+        }
+        @media (max-width: 768px) {
+            .output-box {
+                max-width: 100%; /* Single column on smaller screens */
+            }
+        }
+
+        .output-box h3 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-size: 1.3em;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 8px;
+        }
+        .output-box p, .output-box ul {
+            font-size: 1em;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+        .output-box ul {
+            list-style-type: none;
+            padding-left: 0;
+            max-height: 150px;
+            overflow-y: auto;
+            border-top: 1px dashed #cfcfcf;
+            padding-top: 10px;
+        }
+        .output-box li {
+            padding: 4px 0;
+            border-bottom: 1px dotted #e0e0e0;
+        }
+        .output-box li:last-child {
+            border-bottom: none;
+        }
+
+        .disclaimer {
+            margin-top: 35px;
+            background-color: var(--warning-background);
+            border: 1px solid var(--warning-border);
+            padding: 20px;
+            border-radius: 10px;
+            color: var(--warning-text);
+            font-size: 0.95em;
+            text-align: left;
+            width: 100%;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            box-sizing: border-box;
+        }
+        .disclaimer.error {
+            background-color: var(--danger-background);
+            border-color: var(--danger-border);
+            color: var(--danger-text);
+        }
+
+        .disclaimer h4 {
+            margin-top: 0;
+            color: var(--warning-text);
+            font-size: 1.1em;
+        }
+        .disclaimer.error h4 {
+             color: var(--danger-text);
+        }
+        .disclaimer ul {
+            margin-top: 15px;
+            padding-left: 25px;
+            list-style-type: disc;
+        }
+        .disclaimer li {
+            margin-bottom: 8px;
+        }
+
+        /* Play Note Section specific styles */
+        #play-note-page .controls {
+            flex-direction: column; /* Stack controls vertically */
+        }
+        #play-note-page .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        #play-note-page .control-group label {
+            font-weight: 500;
+            color: var(--secondary-color);
+            min-width: 60px; /* Align labels */
+            text-align: right;
+        }
+        #play-note-page .output-box.play-info {
+            background-color: #e0f2f7;
+            border-color: #b3e0ed;
+            margin-top: 25px;
+        }
+        #play-note-page .output-box.play-info p {
+            font-size: 1.1em;
+        }
+        #play-note-page #playFreqHz {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        #play-note-page #playWaveType {
+            width: 150px;
+        }
+
+        @media (max-width: 500px) {
+            nav a {
+                padding: 10px 15px;
+                font-size: 0.9em;
+                margin: 0 2px;
+            }
+            h1 { font-size: 1.8em; }
+            .container, .disclaimer { padding: 15px; }
+            .controls button, .controls select, .controls input[type="number"] {
+                padding: 10px 15px;
+                font-size: 1em;
+            }
+            #play-note-page .control-group label {
+                min-width: unset;
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Guitar & Music Tools</h1>
+
+    <nav>
+        <a href="#simplified" data-page="simplified-page">Simplified Identifier</a>
+        <a href="#advanced" data-page="advanced-page">Advanced Identifier</a>
+        <a href="#play-note" data-page="play-note-page">Play Note/Chord</a>
+    </nav>
+
+    <!-- Simplified Identifier Page -->
+    <div id="simplified-page" class="page-content active">
+        <div class="container">
+            <h2>Simplified Guitar Note Identifier</h2>
+            <div class="controls">
+                <button id="simplified-startButton">Start Listening</button>
+                <button id="simplified-stopButton" disabled>Stop Listening</button>
+            </div>
+            <p id="simplified-status">Click "Start Listening" to begin.</p>
+            <canvas id="simplified-frequencyCanvas" width="700" height="200"></canvas>
+            <div class="output-section">
+                <div class="output-box" style="max-width: unset;"> <!-- Force single column for this one -->
+                    <h3>Detected Note: <span id="simplified-detectedNote">N/A</span></h3>
+                    <p>Potential Chords (based on detected root note):</p>
+                    <ul id="simplified-chordSuggestions">
+                        <li>Start listening to see suggestions...</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="disclaimer error">
+            <h4>Important Disclaimer: Simplified Limitations</h4>
+            <p>This is a **simplified demonstration** of using the Web Audio API for basic audio input and monophonic (single note) pitch detection. It has significant limitations as a true "chord identifier":</p>
+            <ul>
+                <li>**Monophonic Detection Only:** This app primarily attempts to detect the *single loudest* (fundamental) pitch in the audio stream. It **cannot reliably identify multiple notes simultaneously** to form a chord.</li>
+                <li>**No Polyphonic Chord Recognition:** Identifying a full guitar chord (multiple notes played together) requires complex signal processing, harmonic analysis, or machine learning algorithms that are beyond the scope of this vanilla JavaScript example.</li>
+                <li>**Suggestions, Not Identification:** The "Potential Chords" listed are merely chords that *contain* the detected fundamental note, not an actual recognition of the chord being played.</li>
+                <li>**Accuracy Varies:** Pitch detection accuracy can be affected by microphone quality, background noise, instrument timbre, and how clearly the note is played.</li>
+            </ul>
+            <p>For robust, real-time polyphonic chord recognition, specialized libraries (e.g., Tone.js with specific DSP algorithms) or a backend service with advanced audio analysis would typically be required.</p>
+        </div>
+    </div>
+
+    <!-- Advanced Identifier Page -->
+    <div id="advanced-page" class="page-content">
+        <div class="container">
+            <h2>Advanced Guitar Chord Identifier</h2>
+            <div class="controls">
+                <button id="advanced-startButton">Start Listening</button>
+                <button id="advanced-stopButton" disabled>Stop Listening</button>
+            </div>
+            <p id="advanced-status">Click "Start Listening" to begin audio analysis.</p>
+
+            <canvas id="advanced-frequencyCanvas" width="750" height="200"></canvas>
+
+            <div class="output-section">
+                <div class="output-box">
+                    <h3>Dominant Pitch (Monophonic)</h3>
+                    <p>Detected Note: <span id="advanced-detectedNote">N/A</span></p>
+                    <p>Frequency: <span id="advanced-detectedFreq">N/A</span> Hz</p>
+                    <p>Confidence: <span id="advanced-pitchConfidence">N/A</span></p>
+                </div>
+                <div class="output-box">
+                    <h3>Chord Guess (Polyphonic Hint)</h3>
+                    <p>Most Likely Chord: <strong id="advanced-likelyChord">N/A</strong></p>
+                    <p>Similarity Score: <span id="advanced-chordSimilarity">N/A</span></p>
+                    <p>Top 3 Matches:</p>
+                    <ul id="advanced-chordSuggestions">
+                        <li>Start listening for suggestions...</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="disclaimer">
+            <h4>Important Disclaimer: Advanced Frontend Limitations</h4>
+            <p>This application employs more sophisticated Digital Signal Processing (DSP) techniques like AutoCorrelation for pitch detection and a simplified "Chroma Feature" extraction for polyphonic chord hinting, aiming for the best possible accuracy solely within the browser's frontend environment.</p>
+            <p>However, it still faces significant challenges:</p>
+            <ul>
+                <li>**Polyphonic Complexity:** Accurately identifying multiple notes in a real-time guitar chord (polyphonic recognition) is inherently difficult. This app uses chroma features as a statistical fingerprint, but it's not a perfect solution. Overtones, rapid strums, and complex voicings can confuse the algorithm.</li>
+                <li>**Performance:** All audio analysis runs on the main browser thread via `requestAnimationFrame`. While optimized, very fast or complex audio streams might cause performance dips. For truly heavy DSP, `AudioWorklet` or WebAssembly is preferred but significantly increases code complexity.</li>
+                <li>**Sensitivity:** Microphone quality, ambient noise, and the clarity of the played chord greatly influence results. Faint or distorted sounds are hard to parse.</li>
+                <li>**"Guess" vs. "Detection":** The "Chord Guess" relies on comparing spectral fingerprints. It's a statistical best-fit, not a definitive detection like a human ear.</li>
+            </ul>
+            <p>For truly professional-grade, highly accurate polyphonic chord recognition, dedicated software, specialized libraries (often compiled from C/C++ to WebAssembly), or machine learning models (e.g., via TensorFlow.js) trained on vast datasets would be necessary.</p>
+        </div>
+    </div>
+
+    <!-- Play Note/Chord Page -->
+    <div id="play-note-page" class="page-content">
+        <div class="container">
+            <h2>Play Notes & Chords</h2>
+            <p>Select a note and octave (or a chord) to hear its sound. Use this to test the accuracy of your instrument tuner or just for practice!</p>
+            <div class="controls">
+                <div class="control-group">
+                    <label for="playNoteSelect">Note:</label>
+                    <select id="playNoteSelect">
+                        <option value="C">C</option>
+                        <option value="C#">C#</option>
+                        <option value="D">D</option>
+                        <option value="D#">D#</option>
+                        <option value="E">E</option>
+                        <option value="F">F</option>
+                        <option value="F#">F#</option>
+                        <option value="G">G</option>
+                        <option value="G#">G#</option>
+                        <option value="A" selected>A</option>
+                        <option value="A#">A#</option>
+                        <option value="B">B</option>
+                    </select>
+                    <label for="playOctaveSelect">Octave:</label>
+                    <input type="number" id="playOctaveSelect" value="4" min="0" max="8">
+                    <label for="playWaveType">Wave:</label>
+                    <select id="playWaveType">
+                        <option value="sine">Sine</option>
+                        <option value="square">Square</option>
+                        <option value="sawtooth">Sawtooth</option>
+                        <option value="triangle" selected>Triangle</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <button id="playSingleNoteButton">Play Single Note</button>
+                    <button id="stopSingleNoteButton" disabled>Stop Playback</button>
+                </div>
+                <div class="control-group" style="margin-top: 20px;">
+                    <label for="playChordSelect">Or Play a Chord:</label>
+                    <select id="playChordSelect">
+                        <option value="">-- Select a Chord --</option>
+                        <option value="C Major">C Major</option>
+                        <option value="C Minor">C Minor</option>
+                        <option value="D Major">D Major</option>
+                        <option value="D Minor">D Minor</option>
+                        <option value="E Major">E Major</option>
+                        <option value="E Minor">E Minor</option>
+                        <option value="F Major">F Major</option>
+                        <option value="G Major">G Major</option>
+                        <option value="G Minor">G Minor</option>
+                        <option value="A Major">A Major</option>
+                        <option value="A Minor">A Minor</option>
+                        <option value="B Major">B Major</option>
+                        <!-- Add more common chords as desired -->
+                    </select>
+                    <button id="playChordButton">Play Chord</button>
+                </div>
+            </div>
+            <div class="output-section">
+                <div class="output-box play-info" style="max-width: unset;">
+                    <h3>Playback Information</h3>
+                    <p>Playing Note: <span id="playNoteOutput">N/A</span></p>
+                    <p>Frequency: <span id="playFreqHz">N/A</span> Hz</p>
+                    <p>Wave Type: <span id="playWaveOutput">N/A</span></p>
+                </div>
+            </div>
+        </div>
+        <div class="disclaimer">
+            <h4>Note Playback Information:</h4>
+            <p>The playback feature uses the Web Audio API to generate synthesized tones. We've added a basic amplitude envelope (like a quick pluck and natural decay) to make them sound more "instrument-like" than pure electronic beeps.</p>
+            <p>However, please note:</p>
+            <ul>
+                <li>**Synthesized Timbre:** These are simple waveforms (triangle by default) with an ADSR envelope. They do not replicate the complex, rich timbre of a real guitar, which would require advanced synthesis techniques or pre-recorded audio samples.</li>
+                <li>**Tuning Accuracy:** The notes are generated at their theoretically correct frequencies (12-Tone Equal Temperament, A4=440Hz), making them excellent for testing the pitch accuracy of your instrument or tuner.</li>
+                <li>**Chords:** When playing a chord, all notes are now played simultaneously, simulating a strummed chord.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // --- Global Constants & Helper Functions ---
+        const A4_FREQ = 440; // Standard tuning frequency for A4
+        const NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+        const C0_FREQ = A4_FREQ * Math.pow(2, -57 / 12); // Frequency of C0 (MIDI note 0)
+
+        // Maps note name and octave to frequency
+        function noteToFrequency(noteName, octave) {
+            const noteIndex = NOTES.indexOf(noteName);
+            if (noteIndex === -1) return 0; // Invalid note
+
+            // MIDI A4 is 69. C4 is MIDI 60.
+            // MIDI note number for C0 is 12 (C-1) based on some conventions, here using C0 as reference.
+            // A common mapping uses MIDI 69 for A4.
+            const midiNote = noteIndex + (octave + 1) * 12; // Adjusted for C0 = 0 index
+            return A4_FREQ * Math.pow(2, (midiNote - 69) / 12);
+        }
+
+        // Maps frequency to note name and octave
+        function frequencyToNote(frequency) {
+            if (frequency <= 0) return null;
+
+            const noteNum = 12 * (Math.log(frequency / C0_FREQ) / Math.log(2));
+            const roundedNoteNum = Math.round(noteNum);
+
+            // Determine octave (C0 is -1 for the `noteNum` formula if C0_FREQ is used as reference)
+            // C0 is MIDI 12 (if C-1 is 0). Here, we want C4 to be octave 4.
+            const octave = Math.floor(roundedNoteNum / 12) - 1;
+
+            const noteName = NOTES[(roundedNoteNum % 12 + 12) % 12];
+
+            return {
+                name: noteName,
+                octave: octave >= -1 ? octave : 0, // Ensure minimum sensible octave, e.g., for very low freqs
+                frequency: frequency,
+                midi: roundedNoteNum
+            };
+        }
+
+
+        // --- Navigation Logic ---
+        const pageContents = document.querySelectorAll('.page-content');
+        const navLinks = document.querySelectorAll('nav a');
+        let currentActivePageId = 'simplified-page'; // Default active page
+
+        function deactivateAllPages() {
+            pageContents.forEach(page => page.classList.remove('active'));
+            navLinks.forEach(link => link.classList.remove('active'));
+        }
+
+        function switchPage(pageId) {
+            // De-initialize/stop all active audio processes before switching
+            deinitSimplifiedPage();
+            deinitAdvancedPage();
+            deinitPlayNotePage();
+
+            deactivateAllPages();
+
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.add('active');
+                document.querySelector(`nav a[data-page="${pageId}"]`).classList.add('active');
+                currentActivePageId = pageId;
+
+                // Initialize the new page
+                if (pageId === 'simplified-page') initSimplifiedPage();
+                else if (pageId === 'advanced-page') initAdvancedPage();
+                else if (pageId === 'play-note-page') initPlayNotePage();
+            }
+        }
+
+        // --- Simplified Identifier Page Logic (adapted from first.html) ---
+        let simplifiedAudioContext, simplifiedAnalyser, simplifiedMicrophone, simplifiedAnimationId, simplifiedIsListening = false;
+
+        const simplifiedStartButton = document.getElementById('simplified-startButton');
+        const simplifiedStopButton = document.getElementById('simplified-stopButton');
+        const simplifiedStatusDiv = document.getElementById('simplified-status');
+        const simplifiedFrequencyCanvas = document.getElementById('simplified-frequencyCanvas');
+        const simplifiedDetectedNoteSpan = document.getElementById('simplified-detectedNote');
+        const simplifiedChordSuggestionsList = document.getElementById('simplified-chordSuggestions');
+        const simplifiedCanvasCtx = simplifiedFrequencyCanvas.getContext('2d');
+
+        const SIMPLIFIED_MIN_FREQ = 60;
+        const SIMPLIFIED_MAX_FREQ = 1200;
+
+        const SIMPLIFIED_CHORDS_BY_ROOT = {
+            "C": ["C Major", "C Minor", "C7", "CMaj7"],
+            "C#": ["C# Major", "C# Minor", "C#7"],
+            "D": ["D Major", "D Minor", "D7", "DMaj7"],
+            "D#": ["D# Major", "D# Minor", "D#7"],
+            "E": ["E Major", "E Minor", "E7", "EMaj7"],
+            "F": ["F Major", "F Minor", "F7", "FMaj7"],
+            "F#": ["F# Major", "F# Minor", "F#7"],
+            "G": ["G Major", "G Minor", "G7", "GMaj7"],
+            "G#": ["G# Major", "G# Minor", "G#7"],
+            "A": ["A Major", "A Minor", "A7", "AMaj7"],
+            "A#": ["A# Major", "A# Minor", "A#7"],
+            "B": ["B Major", "B Minor", "B7", "BMaj7"]
+        };
+
+        function simplifiedSetupAudioContext() {
+            if (!simplifiedAudioContext) {
+                simplifiedAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+                simplifiedAnalyser = simplifiedAudioContext.createAnalyser();
+                simplifiedAnalyser.fftSize = 2048;
+                simplifiedAnalyser.minDecibels = -90;
+                simplifiedAnalyser.maxDecibels = -10;
+                simplifiedAnalyser.smoothingTimeConstant = 0.8;
+            }
+        }
+
+        async function simplifiedStartListening() {
+            if (simplifiedIsListening) return;
+
+            simplifiedSetupAudioContext();
+            simplifiedStatusDiv.textContent = 'Requesting microphone access...';
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                simplifiedMicrophone = simplifiedAudioContext.createMediaStreamSource(stream);
+                simplifiedMicrophone.connect(simplifiedAnalyser);
+
+                simplifiedIsListening = true;
+                simplifiedStartButton.disabled = true;
+                simplifiedStopButton.disabled = false;
+                simplifiedStatusDiv.textContent = 'Listening...';
+                simplifiedDrawFrequency();
+
+            } catch (err) {
+                simplifiedStatusDiv.textContent = `Error accessing microphone: ${err.message}. Please allow microphone access.`;
+                console.error('Simplified: Error accessing microphone:', err);
+                simplifiedStartButton.disabled = false;
+                simplifiedStopButton.disabled = true;
+            }
+        }
+
+        function simplifiedStopListening() {
+            if (!simplifiedIsListening) return;
+
+            cancelAnimationFrame(simplifiedAnimationId);
+            if (simplifiedMicrophone) {
+                simplifiedMicrophone.disconnect();
+                simplifiedMicrophone.mediaStream.getTracks().forEach(track => track.stop());
+                simplifiedMicrophone = null;
+            }
+            if (simplifiedAudioContext && simplifiedAudioContext.state !== 'closed') {
+                simplifiedAudioContext.close().then(() => {
+                    simplifiedAudioContext = null;
+                    simplifiedAnalyser = null;
+                    console.log('Simplified: AudioContext closed.');
+                });
+            }
+
+            simplifiedIsListening = false;
+            simplifiedStartButton.disabled = false;
+            simplifiedStopButton.disabled = true;
+            simplifiedStatusDiv.textContent = 'Stopped listening.';
+            simplifiedDetectedNoteSpan.textContent = 'N/A';
+            simplifiedChordSuggestionsList.innerHTML = '<li>Start listening to see suggestions...</li>';
+            simplifiedClearCanvas();
+        }
+
+        function simplifiedDrawFrequency() {
+            simplifiedAnimationId = requestAnimationFrame(simplifiedDrawFrequency);
+
+            if (!simplifiedAnalyser || !simplifiedIsListening) return;
+
+            const bufferLength = simplifiedAnalyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            simplifiedAnalyser.getByteFrequencyData(dataArray);
+
+            simplifiedClearCanvas();
+
+            const barWidth = (simplifiedFrequencyCanvas.width / bufferLength) * 2.5;
+            let x = 0;
+
+            for (let i = 0; i < bufferLength; i++) {
+                const barHeight = dataArray[i];
+                simplifiedCanvasCtx.fillStyle = `rgb(${barHeight + 100}, 50, 50)`;
+                simplifiedCanvasCtx.fillRect(x, simplifiedFrequencyCanvas.height - barHeight / 2, barWidth, barHeight / 2);
+                x += barWidth + 1;
+            }
+
+            const fundamentalFrequency = simplifiedGetFundamentalFrequency(dataArray, simplifiedAudioContext.sampleRate, simplifiedAnalyser.fftSize);
+            if (fundamentalFrequency) {
+                const noteInfo = frequencyToNote(fundamentalFrequency);
+                if (noteInfo) {
+                    simplifiedDetectedNoteSpan.textContent = `${noteInfo.name}${noteInfo.octave} (${fundamentalFrequency.toFixed(2)} Hz)`;
+                    simplifiedUpdateChordSuggestions(noteInfo.name);
+                } else {
+                    simplifiedDetectedNoteSpan.textContent = `N/A (Freq: ${fundamentalFrequency.toFixed(2)} Hz)`;
+                    simplifiedUpdateChordSuggestions(null);
+                }
+            } else {
+                simplifiedDetectedNoteSpan.textContent = 'N/A';
+                simplifiedUpdateChordSuggestions(null);
+            }
+        }
+
+        function simplifiedClearCanvas() {
+            simplifiedCanvasCtx.clearRect(0, 0, simplifiedFrequencyCanvas.width, simplifiedFrequencyCanvas.height);
+            simplifiedCanvasCtx.fillStyle = '#f8f8f8';
+            simplifiedCanvasCtx.fillRect(0, 0, simplifiedFrequencyCanvas.width, simplifiedFrequencyCanvas.height);
+        }
+
+        function simplifiedGetFundamentalFrequency(dataArray, sampleRate, fftSize) {
+            let maxAmplitude = 0;
+            let maxIndex = -1;
+
+            for (let i = 0; i < dataArray.length; i++) {
+                const freq = i * sampleRate / fftSize;
+                if (freq >= SIMPLIFIED_MIN_FREQ && freq <= SIMPLIFIED_MAX_FREQ) {
+                    if (dataArray[i] > maxAmplitude) {
+                        maxAmplitude = dataArray[i];
+                        maxIndex = i;
+                    }
+                }
+            }
+
+            const THRESHOLD = 100;
+            if (maxAmplitude < THRESHOLD || maxIndex === -1) {
+                return null;
+            }
+            return maxIndex * sampleRate / fftSize;
+        }
+
+        function simplifiedUpdateChordSuggestions(rootNote) {
+            simplifiedChordSuggestionsList.innerHTML = '';
+            if (rootNote && SIMPLIFIED_CHORDS_BY_ROOT[rootNote]) {
+                SIMPLIFIED_CHORDS_BY_ROOT[rootNote].forEach(chord => {
+                    const li = document.createElement('li');
+                    li.textContent = chord;
+                    simplifiedChordSuggestionsList.appendChild(li);
+                });
+                if (SIMPLIFIED_CHORDS_BY_ROOT[rootNote].length === 0) {
+                     const li = document.createElement('li');
+                     li.textContent = `No common chords found starting with ${rootNote}.`;
+                     simplifiedChordSuggestionsList.appendChild(li);
+                }
+            } else {
+                const li = document.createElement('li');
+                li.textContent = 'No clear note detected or no suggestions available.';
+                simplifiedChordSuggestionsList.appendChild(li);
+            }
+        }
+
+        function initSimplifiedPage() {
+            simplifiedStartButton.addEventListener('click', simplifiedStartListening);
+            simplifiedStopButton.addEventListener('click', simplifiedStopListening);
+            simplifiedClearCanvas();
+            simplifiedStartButton.disabled = false;
+            simplifiedStopButton.disabled = true;
+            simplifiedStatusDiv.textContent = 'Click "Start Listening" to begin.';
+            simplifiedDetectedNoteSpan.textContent = 'N/A';
+            simplifiedChordSuggestionsList.innerHTML = '<li>Start listening to see suggestions...</li>';
+        }
+
+        function deinitSimplifiedPage() {
+            simplifiedStopListening(); // Ensure audio is stopped when leaving the page
+            simplifiedStartButton.removeEventListener('click', simplifiedStartListening);
+            simplifiedStopButton.removeEventListener('click', simplifiedStopListening);
+        }
+
+        // --- Advanced Identifier Page Logic (adapted from second.html) ---
+        let advancedAudioContext, advancedAnalyser, advancedMicrophone, advancedAnimationId, advancedIsListening = false;
+        let advancedAudioProcessor;
+
+        const advancedStartButton = document.getElementById('advanced-startButton');
+        const advancedStopButton = document.getElementById('advanced-stopButton');
+        const advancedStatusDiv = document.getElementById('advanced-status');
+        const advancedFrequencyCanvas = document.getElementById('advanced-frequencyCanvas');
+        const advancedDetectedNoteSpan = document.getElementById('advanced-detectedNote');
+        const advancedDetectedFreqSpan = document.getElementById('advanced-detectedFreq');
+        const advancedPitchConfidenceSpan = document.getElementById('advanced-pitchConfidence');
+        const advancedLikelyChordSpan = document.getElementById('advanced-likelyChord');
+        const advancedChordSimilaritySpan = document.getElementById('advanced-chordSimilarity');
+        const advancedChordSuggestionsList = document.getElementById('advanced-chordSuggestions');
+        const advancedCanvasCtx = advancedFrequencyCanvas.getContext('2d');
+
+        const ADVANCED_SAMPLE_RATE = 44100;
+        const ADVANCED_FFT_SIZE = 4096;
+        const ADVANCED_AUTO_CORRELATION_BUFFER_SIZE = 2048;
+        const ADVANCED_MIN_FREQ_HZ = 60;
+        const ADVANCED_MAX_FREQ_HZ = 1200;
+        const ADVANCED_PITCH_MIN_CONFIDENCE = 0.85;
+        const ADVANCED_CHORD_MATCH_THRESHOLD = 0.5;
+
+        // --- Chord Definitions for Advanced (includes for Play Chord) ---
+        const CHORD_DEFINITIONS = {
+            "C Major":        { intervals: [0, 4, 7], chroma: null },
+            "C Minor":        { intervals: [0, 3, 7], chroma: null },
+            "C7":             { intervals: [0, 4, 7, 10], chroma: null },
+            "CMaj7":          { intervals: [0, 4, 7, 11], chroma: null },
+            "D Major":        { intervals: [0, 4, 7], chroma: null },
+            "D Minor":        { intervals: [0, 3, 7], chroma: null },
+            "D7":             { intervals: [0, 4, 7, 10], chroma: null },
+            "DMaj7":          { intervals: [0, 4, 7, 11], chroma: null },
+            "D# Major":       { intervals: [0, 4, 7], chroma: null },
+            "D# Minor":       { intervals: [0, 3, 7], chroma: null },
+            "E Major":        { intervals: [0, 4, 7], chroma: null },
+            "E Minor":        { intervals: [0, 3, 7], chroma: null },
+            "E7":             { intervals: [0, 4, 7, 10], chroma: null },
+            "EMaj7":          { intervals: [0, 4, 7, 11], chroma: null },
+            "F Major":        { intervals: [0, 4, 7], chroma: null },
+            "F Minor":        { intervals: [0, 3, 7], chroma: null },
+            "F7":             { intervals: [0, 4, 7, 10], chroma: null },
+            "F# Major":       { intervals: [0, 4, 7], chroma: null },
+            "F# Minor":       { intervals: [0, 3, 7], chroma: null },
+            "G Major":        { intervals: [0, 4, 7], chroma: null },
+            "G Minor":        { intervals: [0, 3, 7], chroma: null },
+            "G7":             { intervals: [0, 4, 7, 10], chroma: null },
+            "GMaj7":          { intervals: [0, 4, 7, 11], chroma: null },
+            "G# Major":       { intervals: [0, 4, 7], chroma: null },
+            "G# Minor":       { intervals: [0, 3, 7], chroma: null },
+            "A Major":        { intervals: [0, 4, 7], chroma: null },
+            "A Minor":        { intervals: [0, 3, 7], chroma: null },
+            "A7":             { intervals: [0, 4, 7, 10], chroma: null },
+            "AMaj7":          { intervals: [0, 4, 7, 11], chroma: null },
+            "A# Major":       { intervals: [0, 4, 7], chroma: null },
+            "A# Minor":       { intervals: [0, 3, 7], chroma: null },
+            "B Major":        { intervals: [0, 4, 7], chroma: null },
+            "B Minor":        { intervals: [0, 3, 7], chroma: null },
+            "B7":             { intervals: [0, 4, 7, 10], chroma: null },
+            "BMaj7":          { intervals: [0, 4, 7, 11], chroma: null }
+        };
+
+        function precomputeChromaVectors() {
+            for (const chordName in CHORD_DEFINITIONS) {
+                const chord = CHORD_DEFINITIONS[chordName];
+                const chromaVector = new Array(12).fill(0);
+                const rootNoteName = chordName.split(' ')[0].replace('#', '');
+                const rootNoteIndex = NOTES.indexOf(rootNoteName);
+
+                chord.intervals.forEach(interval => {
+                    const noteInChordIndex = (rootNoteIndex + interval) % 12;
+                    chromaVector[noteInChordIndex] = 1;
+                });
+                chord.chroma = normalizeChroma(chromaVector);
+            }
+        }
+        precomputeChromaVectors(); // Call this once on script load
+
+        function advancedSetupAudioContext() {
+            if (!advancedAudioContext) {
+                advancedAudioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: ADVANCED_SAMPLE_RATE });
+                advancedAnalyser = advancedAudioContext.createAnalyser();
+                advancedAnalyser.fftSize = ADVANCED_FFT_SIZE;
+                advancedAnalyser.minDecibels = -90;
+                advancedAnalyser.maxDecibels = -10;
+                advancedAnalyser.smoothingTimeConstant = 0.8;
+
+                advancedAudioProcessor = advancedAudioContext.createScriptProcessor(ADVANCED_AUTO_CORRELATION_BUFFER_SIZE, 1, 1);
+                advancedAudioProcessor.onaudioprocess = advancedHandleAudioProcess;
+                advancedAudioProcessor.connect(advancedAudioContext.destination);
+            }
+        }
+
+        async function advancedStartListening() {
+            if (advancedIsListening) return;
+
+            advancedSetupAudioContext();
+            advancedStatusDiv.textContent = 'Requesting microphone access...';
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                advancedMicrophone = advancedAudioContext.createMediaStreamSource(stream);
+                advancedMicrophone.connect(advancedAnalyser);
+                advancedMicrophone.connect(advancedAudioProcessor);
+
+                advancedIsListening = true;
+                advancedStartButton.disabled = true;
+                advancedStopButton.disabled = false;
+                advancedStatusDiv.textContent = 'Listening...';
+                advancedDrawVisualization();
+
+            } catch (err) {
+                advancedStatusDiv.textContent = `Error accessing microphone: ${err.message}. Please allow microphone access.`;
+                console.error('Advanced: Error accessing microphone:', err);
+                advancedStartButton.disabled = false;
+                advancedStopButton.disabled = true;
+            }
+        }
+
+        function advancedStopListening() {
+            if (!advancedIsListening) return;
+
+            cancelAnimationFrame(advancedAnimationId);
+            if (advancedMicrophone) {
+                advancedMicrophone.disconnect();
+                advancedMicrophone.mediaStream.getTracks().forEach(track => track.stop());
+                advancedMicrophone = null;
+            }
+            if (advancedAudioProcessor) {
+                advancedAudioProcessor.disconnect();
+                advancedAudioProcessor.onaudioprocess = null;
+                advancedAudioProcessor = null;
+            }
+            if (advancedAudioContext && advancedAudioContext.state !== 'closed') {
+                advancedAudioContext.close().then(() => {
+                    advancedAudioContext = null;
+                    advancedAnalyser = null;
+                    console.log('Advanced: AudioContext closed.');
+                });
+            }
+
+            advancedIsListening = false;
+            advancedStartButton.disabled = false;
+            advancedStopButton.disabled = true;
+            advancedStatusDiv.textContent = 'Stopped listening.';
+            advancedDetectedNoteSpan.textContent = 'N/A';
+            advancedDetectedFreqSpan.textContent = 'N/A';
+            advancedPitchConfidenceSpan.textContent = 'N/A';
+            advancedLikelyChordSpan.textContent = 'N/A';
+            advancedChordSimilaritySpan.textContent = 'N/A';
+            advancedChordSuggestionsList.innerHTML = '<li>Start listening for suggestions...</li>';
+            advancedClearCanvas();
+        }
+
+        const advancedTimeDomainData = new Float32Array(ADVANCED_AUTO_CORRELATION_BUFFER_SIZE);
+        const advancedFrequencyData = new Uint8Array(ADVANCED_FFT_SIZE / 2);
+
+        function advancedHandleAudioProcess(event) {
+            event.inputBuffer.getChannelData(0, advancedTimeDomainData);
+            const pitchResult = advancedAutoCorrelate(advancedTimeDomainData, advancedAudioContext.sampleRate);
+
+            advancedAnalyser.getByteFrequencyData(advancedFrequencyData);
+
+            advancedUpdateOutput(pitchResult, advancedFrequencyData);
+        }
+
+        function advancedDrawVisualization() {
+            advancedAnimationId = requestAnimationFrame(advancedDrawVisualization);
+
+            if (!advancedAnalyser || !advancedIsListening) return;
+
+            advancedClearCanvas();
+
+            const bufferLength = advancedFrequencyData.length;
+            const barWidth = (advancedFrequencyCanvas.width / bufferLength) * 2;
+            let x = 0;
+
+            for (let i = 0; i < bufferLength; i++) {
+                const barHeight = advancedFrequencyData[i];
+                const freq = i * (advancedAudioContext.sampleRate / ADVANCED_FFT_SIZE);
+                if (freq >= ADVANCED_MIN_FREQ_HZ && freq <= ADVANCED_MAX_FREQ_HZ) {
+                     advancedCanvasCtx.fillStyle = `hsl(${barHeight + 180}, 70%, 50%)`;
+                     advancedCanvasCtx.fillRect(x, advancedFrequencyCanvas.height - barHeight / 1.5, barWidth, barHeight / 1.5);
+                }
+                x += barWidth + 1;
+            }
+        }
+
+        function advancedClearCanvas() {
+            advancedCanvasCtx.clearRect(0, 0, advancedFrequencyCanvas.width, advancedFrequencyCanvas.height);
+            advancedCanvasCtx.fillStyle = '#fcfdfe';
+            advancedCanvasCtx.fillRect(0, 0, advancedFrequencyCanvas.width, advancedFrequencyCanvas.height);
+        }
+
+        function advancedAutoCorrelate(buffer, sampleRate) {
+            const bufferLength = buffer.length;
+            const rms = Math.sqrt(buffer.reduce((sum, val) => sum + val * val, 0) / bufferLength);
+
+            if (rms < 0.01) {
+                return { frequency: 0, confidence: 0 };
+            }
+
+            const acf = new Array(bufferLength).fill(0);
+
+            for (let i = 0; i < bufferLength; i++) {
+                for (let j = 0; j < bufferLength - i; j++) {
+                    acf[i] += buffer[j] * buffer[j + i];
+                }
+            }
+
+            let d = 0;
+            let maxVal = -1;
+
+            const minPeriod = sampleRate / ADVANCED_MAX_FREQ_HZ;
+            const maxPeriod = sampleRate / ADVANCED_MIN_FREQ_HZ;
+
+            for (let i = Math.floor(minPeriod); i <= Math.floor(maxPeriod) && i < bufferLength; i++) {
+                if (acf[i] > maxVal) {
+                    maxVal = acf[i];
+                    d = i;
+                }
+            }
+
+            if (d === 0) {
+                return { frequency: 0, confidence: 0 };
+            }
+
+            let x0 = (d < 1) ? d : d - 1;
+            let x2 = (d + 1 < bufferLength) ? d + 1 : d;
+            if (x0 === d) x0++;
+            if (x2 === d) x2--;
+            if (acf[x0] === 0 || acf[x2] === 0) return { frequency: sampleRate / d, confidence: 0.5 };
+
+            const a = (acf[x0] + acf[x2] - 2 * acf[d]) / 2;
+            const b = (acf[x2] - acf[x0]) / 2;
+            if (a) {
+                d -= b / (2 * a);
+            }
+
+            const frequency = sampleRate / d;
+            let confidence = (maxVal > 0) ? (maxVal / acf[0]) : 0;
+            if (confidence > 1) confidence = 1;
+
+            return { frequency: frequency, confidence: confidence };
+        }
+
+        function extractChromaVector(frequencyData, sampleRate, fftSize) {
+            const chroma = new Array(12).fill(0);
+            const binWidth = sampleRate / fftSize;
+
+            for (let i = 0; i < frequencyData.length; i++) {
+                const amplitude = frequencyData[i];
+                if (amplitude < 50) continue;
+
+                const freq = i * binWidth;
+                if (freq < ADVANCED_MIN_FREQ_HZ || freq > ADVANCED_MAX_FREQ_HZ) continue;
+
+                if (freq > 0) {
+                    const noteNum = 12 * (Math.log(freq / C0_FREQ) / Math.log(2));
+                    const chromaIndex = Math.round(noteNum) % 12;
+                    chroma[chromaIndex] += amplitude;
+                }
+            }
+            return normalizeChroma(chroma);
+        }
+
+        function normalizeChroma(chromaVector) {
+            const sumOfSquares = chromaVector.reduce((sum, val) => sum + val * val, 0);
+            const magnitude = Math.sqrt(sumOfSquares);
+            if (magnitude === 0) return new Array(12).fill(0);
+            return chromaVector.map(val => val / magnitude);
+        }
+
+        function cosineSimilarity(vecA, vecB) {
+            let dotProduct = 0;
+            let magnitudeA = 0;
+            let magnitudeB = 0;
+            for (let i = 0; i < 12; i++) {
+                dotProduct += vecA[i] * vecB[i];
+                magnitudeA += vecA[i] * vecA[i];
+                magnitudeB += vecB[i] * vecB[i];
+            }
+            magnitudeA = Math.sqrt(magnitudeA);
+            magnitudeB = Math.sqrt(magnitudeB);
+
+            if (magnitudeA === 0 || magnitudeB === 0) return 0;
+            return dotProduct / (magnitudeA * magnitudeB);
+        }
+
+        function findBestChordMatch(liveChroma) {
+            let bestMatch = { chord: "N/A", similarity: 0 };
+            const allMatches = [];
+
+            for (const chordName in CHORD_DEFINITIONS) {
+                const chordChroma = CHORD_DEFINITIONS[chordName].chroma;
+                if (chordChroma) { // Ensure chroma is computed
+                    const similarity = cosineSimilarity(liveChroma, chordChroma);
+                    allMatches.push({ chord: chordName, similarity: similarity });
+
+                    if (similarity > bestMatch.similarity) {
+                        bestMatch = { chord: chordName, similarity: similarity };
+                    }
+                }
+            }
+
+            allMatches.sort((a, b) => b.similarity - a.similarity);
+            return { bestMatch, topMatches: allMatches.slice(0, 3) };
+        }
+
+        function advancedUpdateOutput(pitchResult, frequencyData) {
+            if (pitchResult.confidence > ADVANCED_PITCH_MIN_CONFIDENCE && pitchResult.frequency >= ADVANCED_MIN_FREQ_HZ && pitchResult.frequency <= ADVANCED_MAX_FREQ_HZ) {
+                const noteInfo = frequencyToNote(pitchResult.frequency);
+                if (noteInfo) {
+                    advancedDetectedNoteSpan.textContent = `${noteInfo.name}${noteInfo.octave}`;
+                    advancedDetectedFreqSpan.textContent = pitchResult.frequency.toFixed(2);
+                    advancedPitchConfidenceSpan.textContent = (pitchResult.confidence * 100).toFixed(1) + '%';
+                } else {
+                    advancedDetectedNoteSpan.textContent = 'N/A';
+                    advancedDetectedFreqSpan.textContent = 'N/A';
+                    advancedPitchConfidenceSpan.textContent = 'N/A';
+                }
+            } else {
+                advancedDetectedNoteSpan.textContent = 'N/A';
+                advancedDetectedFreqSpan.textContent = 'N/A';
+                advancedPitchConfidenceSpan.textContent = 'N/A';
+            }
+
+            const liveChroma = extractChromaVector(frequencyData, advancedAudioContext.sampleRate, ADVANCED_FFT_SIZE);
+            const { bestMatch, topMatches } = findBestChordMatch(liveChroma);
+
+            if (bestMatch.similarity > ADVANCED_CHORD_MATCH_THRESHOLD) {
+                advancedLikelyChordSpan.textContent = bestMatch.chord;
+                advancedChordSimilaritySpan.textContent = (bestMatch.similarity * 100).toFixed(1) + '%';
+                advancedChordSuggestionsList.innerHTML = '';
+                topMatches.forEach(match => {
+                    if (match.similarity > ADVANCED_CHORD_MATCH_THRESHOLD * 0.7) {
+                        const li = document.createElement('li');
+                        li.textContent = `${match.chord} (${(match.similarity * 100).toFixed(1)}%)`;
+                        advancedChordSuggestionsList.appendChild(li);
+                    }
+                });
+                if (advancedChordSuggestionsList.children.length === 0) {
+                     const li = document.createElement('li');
+                     li.textContent = 'No confident chord matches found.';
+                     advancedChordSuggestionsList.appendChild(li);
+                }
+            } else {
+                advancedLikelyChordSpan.textContent = 'N/A';
+                advancedChordSimilaritySpan.textContent = 'N/A';
+                advancedChordSuggestionsList.innerHTML = '<li>No confident chord matches found.</li>';
+            }
+        }
+
+        function initAdvancedPage() {
+            advancedStartButton.addEventListener('click', advancedStartListening);
+            advancedStopButton.addEventListener('click', advancedStopListening);
+            advancedClearCanvas();
+            advancedStartButton.disabled = false;
+            advancedStopButton.disabled = true;
+            advancedStatusDiv.textContent = 'Click "Start Listening" to begin audio analysis.';
+            advancedDetectedNoteSpan.textContent = 'N/A';
+            advancedDetectedFreqSpan.textContent = 'N/A';
+            advancedPitchConfidenceSpan.textContent = 'N/A';
+            advancedLikelyChordSpan.textContent = 'N/A';
+            advancedChordSimilaritySpan.textContent = 'N/A';
+            advancedChordSuggestionsList.innerHTML = '<li>Start listening for suggestions...</li>';
+        }
+
+        function deinitAdvancedPage() {
+            advancedStopListening();
+            advancedStartButton.removeEventListener('click', advancedStartListening);
+            advancedStopButton.removeEventListener('click', advancedStopListening);
+        }
+
+        // --- Play Note/Chord Feature Logic ---
+        let playAudioContext;
+        let activeOscillators = []; // To keep track of playing notes
+        let playStopTimeout;
+
+        const playNoteSelect = document.getElementById('playNoteSelect');
+        const playOctaveSelect = document.getElementById('playOctaveSelect');
+        const playWaveType = document.getElementById('playWaveType');
+        const playSingleNoteButton = document.getElementById('playSingleNoteButton');
+        const stopSingleNoteButton = document.getElementById('stopSingleNoteButton');
+        const playChordSelect = document.getElementById('playChordSelect');
+        const playChordButton = document.getElementById('playChordButton');
+        const playNoteOutput = document.getElementById('playNoteOutput');
+        const playFreqHz = document.getElementById('playFreqHz');
+        const playWaveOutput = document.getElementById('playWaveOutput');
+
+        // ADSR envelope parameters for a plucked sound
+        const ADSR_PARAMS = {
+            attackTime: 0.02,   // Very fast attack
+            decayTime: 0.1,    // Quick decay
+            sustainLevel: 0.5, // Sustain at half volume
+            releaseTime: 0.8   // Gradual release
+        };
+        const TOTAL_NOTE_DURATION = ADSR_PARAMS.attackTime + ADSR_PARAMS.decayTime + ADSR_PARAMS.releaseTime + 0.5; // Roughly 1.5s total including a small sustain
+
+        function setupPlayAudioContext() {
+            if (!playAudioContext || playAudioContext.state === 'closed') {
+                playAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function stopAllPlayback() {
+            activeOscillators.forEach(oscillator => {
+                try {
+                    // Ensure oscillator is stopped and disconnected
+                    if (oscillator.stop) oscillator.stop(); // Stop immediately
+                    if (oscillator.disconnect) oscillator.disconnect();
+                } catch (e) {
+                    console.warn("Error stopping oscillator:", e);
+                }
+            });
+            activeOscillators = [];
+            if (playStopTimeout) {
+                clearTimeout(playStopTimeout);
+                playStopTimeout = null;
+            }
+            stopSingleNoteButton.disabled = true;
+            playSingleNoteButton.disabled = false;
+            playChordButton.disabled = false;
+            playNoteOutput.textContent = 'N/A';
+            playFreqHz.textContent = 'N/A';
+            playWaveOutput.textContent = 'N/A';
+        }
+
+        function playTone(frequency, waveType, adsrParams, startAt = 0) {
+            setupPlayAudioContext();
+            if (!playAudioContext) {
+                alert("Web Audio API not supported or context could not be created.");
+                return;
+            }
+
+            const now = playAudioContext.currentTime + startAt;
+
+            const oscillator = playAudioContext.createOscillator();
+            const gainNode = playAudioContext.createGain();
+
+            oscillator.type = waveType;
+            oscillator.frequency.setValueAtTime(frequency, now);
+
+            // Apply ADSR envelope
+            gainNode.gain.setValueAtTime(0, now); // Start at 0 volume
+            gainNode.gain.linearRampToValueAtTime(1, now + adsrParams.attackTime); // Attack
+            gainNode.gain.linearRampToValueAtTime(adsrParams.sustainLevel, now + adsrParams.attackTime + adsrParams.decayTime); // Decay
+            
+            // Sustain for a fixed duration, then release
+            const releaseStart = now + adsrParams.attackTime + adsrParams.decayTime + 0.5; // Fixed sustain of 0.5s
+            gainNode.gain.linearRampToValueAtTime(adsrParams.sustainLevel, releaseStart); // Hold sustain level
+            gainNode.gain.linearRampToValueAtTime(0.0001, releaseStart + adsrParams.releaseTime); // Release to near silent
+
+            oscillator.connect(gainNode);
+            gainNode.connect(playAudioContext.destination);
+
+            const totalDuration = releaseStart + adsrParams.releaseTime; // Total time for this note
+
+            oscillator.start(now);
+            oscillator.stop(totalDuration);
+
+            activeOscillators.push(oscillator);
+
+            // Clean up stopped oscillators
+            oscillator.onended = () => {
+                const index = activeOscillators.indexOf(oscillator);
+                if (index > -1) {
+                    activeOscillators.splice(index, 1);
+                }
+                gainNode.disconnect(); // Disconnect gain node after sound ends
+            };
+        }
+
+        function handlePlaySingleNote() {
+            stopAllPlayback();
+            const noteName = playNoteSelect.value;
+            const octave = parseInt(playOctaveSelect.value, 10);
+            const waveType = playWaveType.value;
+
+            const freq = noteToFrequency(noteName, octave);
+            if (freq <= 0) {
+                alert('Invalid note selected.');
+                return;
+            }
+
+            playTone(freq, waveType, ADSR_PARAMS);
+
+            playNoteOutput.textContent = `${noteName}${octave}`;
+            playFreqHz.textContent = freq.toFixed(2);
+            playWaveOutput.textContent = waveType.charAt(0).toUpperCase() + waveType.slice(1);
+
+            playSingleNoteButton.disabled = true;
+            playChordButton.disabled = true;
+            stopSingleNoteButton.disabled = false;
+            playStopTimeout = setTimeout(stopAllPlayback, TOTAL_NOTE_DURATION * 1000); // Auto-stop
+        }
+
+        function handlePlayChord() {
+            stopAllPlayback();
+            const selectedChordName = playChordSelect.value;
+            if (!selectedChordName) return;
+
+            const chordDefinition = CHORD_DEFINITIONS[selectedChordName];
+            if (!chordDefinition) {
+                alert('Invalid chord selected.');
+                return;
+            }
+
+            const rootNoteName = selectedChordName.split(' ')[0].replace('#', '');
+            const waveType = playWaveType.value;
+
+            const baseOctave = 4; // Start chords around C4/A4 range
+
+            chordDefinition.intervals.forEach(interval => {
+                const rootNoteIndex = NOTES.indexOf(rootNoteName);
+                const noteIndex = (rootNoteIndex + interval) % 12;
+                const noteName = NOTES[noteIndex];
+
+                let currentOctave = baseOctave;
+                // Simple octave adjustment to keep chord notes somewhat compact
+                if (interval >= 7 && rootNoteIndex + interval >= 12) { // If it's a 5th or higher and crosses C, assume next octave
+                    currentOctave = baseOctave + 1;
+                } else if (interval < 0 && rootNoteIndex + interval < 0) { // If it goes below C, assume lower octave
+                     currentOctave = baseOctave - 1;
+                }
+
+                const freq = noteToFrequency(noteName, currentOctave);
+                if (freq > 0) {
+                    // Play all notes simultaneously with the same ADSR
+                    playTone(freq, waveType, ADSR_PARAMS);
+                }
+            });
+
+            playNoteOutput.textContent = selectedChordName;
+            playFreqHz.textContent = 'Multiple Frequencies';
+            playWaveOutput.textContent = waveType.charAt(0).toUpperCase() + waveType.slice(1);
+
+            playSingleNoteButton.disabled = true;
+            playChordButton.disabled = true;
+            stopSingleNoteButton.disabled = false;
+            playStopTimeout = setTimeout(stopAllPlayback, TOTAL_NOTE_DURATION * 1000); // Auto-stop
+        }
+
+        function initPlayNotePage() {
+            playSingleNoteButton.addEventListener('click', handlePlaySingleNote);
+            stopSingleNoteButton.addEventListener('click', stopAllPlayback);
+            playChordButton.addEventListener('click', handlePlayChord);
+            stopAllPlayback(); // Reset state
+        }
+
+        function deinitPlayNotePage() {
+            stopAllPlayback(); // Ensure all sounds stop when leaving the page
+            playSingleNoteButton.removeEventListener('click', handlePlaySingleNote);
+            stopSingleNoteButton.removeEventListener('click', stopAllPlayback);
+            playChordButton.removeEventListener('click', handlePlayChord);
+        }
+
+        // --- Initial Setup on DOM Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set initial page and navigation link active
+            const initialPageId = window.location.hash.substring(1) + '-page';
+            // Fallback to 'simplified-page' if hash is empty or invalid
+            switchPage(initialPageId && document.getElementById(initialPageId) ? initialPageId : 'simplified-page');
+
+
+            // Add event listeners for navigation
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const pageId = link.getAttribute('data-page');
+                    history.pushState(null, '', `#${pageId.replace('-page', '')}`); // Update URL hash
+                    switchPage(pageId);
+                });
+            });
+
+            // Handle browser back/forward buttons
+            window.addEventListener('popstate', () => {
+                const pageId = window.location.hash.substring(1) + '-page';
+                switchPage(pageId && document.getElementById(pageId) ? pageId : 'simplified-page');
+            });
+
+            // Populate chord dropdown for "Play Note" feature
+            const playChordSelectElement = document.getElementById('playChordSelect');
+            for (const chordName in CHORD_DEFINITIONS) {
+                const option = document.createElement('option');
+                option.value = chordName;
+                option.textContent = chordName;
+                playChordSelectElement.appendChild(option);
+            }
+        });
+    </script>
+</body>
+</html>

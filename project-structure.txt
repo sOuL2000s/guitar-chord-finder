@@ -1,0 +1,10 @@
+your_project_name/
+├── frontend/
+│   ├── index.html
+│   ├── style.css
+│   └── script.js
+└── backend/
+    ├── main.py
+    ├── requirements.txt
+    └── chord_data.py  # To store chord templates for the simplified ML simulation
+    

@@ -1,0 +1,16 @@
+[CLIENT - BROWSER (HTML, CSS, JS)]
+    1. User Interface (HTML, CSS)
+    2. Web Audio API: Captures microphone audio.
+    3. JavaScript: Chunks audio, sends to Python backend via WebSocket.
+    4. JavaScript: Receives chord predictions from backend via WebSocket.
+    5. JavaScript: Renders real-time visualizations (spectrogram, chroma, chords).
+           |
+           |   WebSocket (Audio Chunks)
+           V
+[SERVER - PYTHON (FastAPI, librosa, TensorFlow/PyTorch)]
+    1. FastAPI: Handles WebSocket connections.
+    2. Receives audio chunks.
+    3. Audio Preprocessing: Resampling, normalization.
+    4. Feature Extraction: Librosa extracts advanced features (e.g., MFCCs, Chroma, Constant-Q Transform).
+    5. Machine Learning Model: Pre-trained model predicts the chord(s) and confidence.
+    6. Sends predictions back to client via WebSocket.
