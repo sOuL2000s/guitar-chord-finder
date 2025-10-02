@@ -58,7 +58,6 @@
             display: flex;
             justify-content: center;
             padding: 10px 0;
-            flex-wrap: wrap; /* Allow navigation items to wrap on smaller screens */
         }
 
         nav a {
@@ -70,7 +69,6 @@
             transition: background-color 0.3s ease, transform 0.2s ease;
             font-weight: 500;
             font-size: 1.1em;
-            white-space: nowrap; /* Prevent nav links from breaking onto multiple lines */
         }
 
         nav a:hover {
@@ -308,118 +306,6 @@
             width: 150px;
         }
 
-        /* Guitar Tuner Page specific styles */
-        #tuner-page .container {
-            padding-top: 20px;
-        }
-        #tuner-note-display {
-            font-family: 'Roboto', sans-serif;
-            font-size: 4.5em; /* Larger font size */
-            font-weight: 700;
-            margin: 30px 0;
-            color: var(--secondary-color);
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.1);
-            min-height: 1.2em;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: color 0.3s ease; /* Smooth color change */
-        }
-        #tuner-note-display.in-tune { color: #28a745; } /* Green for in-tune note */
-        #tuner-note-display.flat { color: var(--danger-text); } /* Red for flat note */
-        #tuner-note-display.sharp { color: var(--warning-text); } /* Orange for sharp note */
-
-        #tuner-detector {
-            margin: 40px auto;
-            width: 80%;
-            max-width: 400px;
-            height: 30px;
-            background: #d6e3ea; /* Slightly darker background for better contrast */
-            border: 1px solid var(--border-color);
-            border-radius: 15px;
-            overflow: hidden;
-            position: relative;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-        }
-        #tuner-indicator {
-            position: absolute;
-            top: 0;
-            height: 100%;
-            width: 25px; /* Slightly wider indicator for better visibility */
-            background: var(--primary-color);
-            border-radius: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            transition: left 0.15s ease-out, background-color 0.2s ease; /* Smoother transition */
-            box-shadow: 0 0 8px rgba(0,0,0,0.2);
-        }
-        #tuner-indicator.flat { background-color: var(--danger-border); }
-        #tuner-indicator.sharp { background-color: var(--warning-border); }
-        #tuner-indicator.in-tune { background-color: #28a745; box-shadow: 0 0 12px rgba(40, 167, 69, 0.6); } /* Green for in-tune, more pronounced shadow */
-
-        #tuner-status {
-            margin-top: 20px;
-            font-size: 1.2em;
-            font-weight: 500;
-            color: var(--text-color);
-            min-height: 30px;
-            transition: color 0.3s ease; /* Smooth color change for status */
-        }
-        #tuner-status.in-tune { color: #28a745; font-weight: 700; }
-        #tuner-status.flat { color: var(--danger-text); font-weight: 700; }
-        #tuner-status.sharp { color: var(--warning-text); font-weight: 700; }
-
-
-        /* String display for tuning */
-        #tuner-strings {
-            display: flex;
-            justify-content: center;
-            gap: 12px; /* Slightly more gap */
-            margin-top: 30px;
-            flex-wrap: wrap;
-        }
-        .string-wrapper {
-            width: 65px; /* Slightly larger circles */
-            height: 65px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.3em; /* Larger font */
-            font-weight: 700;
-            background-color: var(--background-color);
-            color: var(--light-text-color);
-            border: 3px solid var(--border-color); /* Thicker border */
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-            cursor: default;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.1); /* More subtle shadow */
-        }
-        .string-wrapper.active {
-            background-color: var(--primary-color);
-            color: white;
-            border-color: var(--primary-hover-color);
-            transform: translateY(-5px) scale(1.05); /* More pronounced active state */
-            box-shadow: 0 6px 15px rgba(0,0,0,0.25);
-        }
-        .string-wrapper.active.in-tune {
-            background-color: #28a745; /* Green */
-            border-color: #218838;
-            box-shadow: 0 6px 15px rgba(40, 167, 69, 0.4);
-        }
-        .string-wrapper.active.flat {
-            background-color: var(--danger-background);
-            color: var(--danger-text);
-            border-color: var(--danger-border);
-            box-shadow: 0 6px 15px rgba(231, 76, 60, 0.25);
-        }
-        .string-wrapper.active.sharp {
-            background-color: var(--warning-background);
-            color: var(--warning-text);
-            border-color: var(--warning-border);
-            box-shadow: 0 6px 15px rgba(231, 177, 0, 0.25);
-        }
-
-
         @media (max-width: 500px) {
             nav a {
                 padding: 10px 15px;
@@ -436,13 +322,6 @@
                 min-width: unset;
                 text-align: left;
             }
-            #tuner-note-display { font-size: 3em; }
-            #tuner-detector { width: 90%; }
-            .string-wrapper {
-                width: 50px;
-                height: 50px;
-                font-size: 1em;
-            }
         }
     </style>
 </head>
@@ -453,7 +332,6 @@
         <a href="#simplified" data-page="simplified-page">Simplified Identifier</a>
         <a href="#advanced" data-page="advanced-page">Advanced Identifier</a>
         <a href="#play-note" data-page="play-note-page">Play Note/Chord</a>
-        <a href="#tuner" data-page="tuner-page">Guitar Tuner</a>
     </nav>
 
     <!-- Simplified Identifier Page -->
@@ -613,43 +491,6 @@
         </div>
     </div>
 
-    <!-- Guitar Tuner Page -->
-    <div id="tuner-page" class="page-content">
-        <div class="container">
-            <h2>🎸 Guitar Tuner</h2>
-            <p>Play a string and see if it's in tune!</p>
-            <div class="controls">
-                <button id="tuner-startButton">Start Tuning</button>
-                <button id="tuner-stopButton" disabled>Stop Tuning</button>
-            </div>
-            <div id="tuner-note-display">---</div>
-            <div id="tuner-detector">
-                <div id="tuner-indicator"></div>
-            </div>
-            <div class="status" id="tuner-status">Click "Start Tuning" to begin.</div>
-
-            <!-- Visual representation of strings -->
-            <div id="tuner-strings" class="string-display">
-                <div class="string-wrapper" data-target-note="E2">E2</div>
-                <div class="string-wrapper" data-target-note="A2">A2">A2</div>
-                <div class="string-wrapper" data-target-note="D3">D3</div>
-                <div class="string-wrapper" data-target-note="G3">G3</div>
-                <div class="string-wrapper" data-target-note="B3">B3</div>
-                <div class="string-wrapper" data-target-note="E4">E4</div>
-            </div>
-        </div>
-
-        <div class="disclaimer">
-            <h4>Guitar Tuner Information:</h4>
-            <p>This tuner uses real-time microphone input and a specialized pitch detection algorithm (autocorrelation) to help you tune your guitar.</p>
-            <ul>
-                <li>**Accuracy:** While designed for reasonable accuracy, results can vary based on microphone quality, ambient noise, and the clarity of the note you play. Pluck strings cleanly.</li>
-                <li>**String Focus:** The tuner attempts to identify which standard guitar string (E2, A2, D3, G3, B3, E4) you are playing and shows its deviation.</li>
-                <li>**Visual Feedback:** The central indicator shows if you're flat (left), sharp (right), or in tune (center). The colored circles at the bottom indicate the target string and its tuning status.</li>
-            </ul>
-        </div>
-    </div>
-
     <script>
         // --- Global Constants & Helper Functions ---
         const A4_FREQ = 440; // Standard tuning frequency for A4
@@ -661,7 +502,10 @@
             const noteIndex = NOTES.indexOf(noteName);
             if (noteIndex === -1) return 0; // Invalid note
 
-            const midiNote = noteIndex + (octave + 1) * 12; 
+            // MIDI A4 is 69. C4 is MIDI 60.
+            // MIDI note number for C0 is 12 (C-1) based on some conventions, here using C0 as reference.
+            // A common mapping uses MIDI 69 for A4.
+            const midiNote = noteIndex + (octave + 1) * 12; // Adjusted for C0 = 0 index
             return A4_FREQ * Math.pow(2, (midiNote - 69) / 12);
         }
 
@@ -672,13 +516,15 @@
             const noteNum = 12 * (Math.log(frequency / C0_FREQ) / Math.log(2));
             const roundedNoteNum = Math.round(noteNum);
 
+            // Determine octave (C0 is -1 for the `noteNum` formula if C0_FREQ is used as reference)
+            // C0 is MIDI 12 (if C-1 is 0). Here, we want C4 to be octave 4.
             const octave = Math.floor(roundedNoteNum / 12) - 1;
 
             const noteName = NOTES[(roundedNoteNum % 12 + 12) % 12];
 
             return {
                 name: noteName,
-                octave: octave >= -1 ? octave : 0, 
+                octave: octave >= -1 ? octave : 0, // Ensure minimum sensible octave, e.g., for very low freqs
                 frequency: frequency,
                 midi: roundedNoteNum
             };
@@ -700,7 +546,6 @@
             deinitSimplifiedPage();
             deinitAdvancedPage();
             deinitPlayNotePage();
-            deinitTunerPage(); 
 
             deactivateAllPages();
 
@@ -714,7 +559,6 @@
                 if (pageId === 'simplified-page') initSimplifiedPage();
                 else if (pageId === 'advanced-page') initAdvancedPage();
                 else if (pageId === 'play-note-page') initPlayNotePage();
-                else if (pageId === 'tuner-page') initTunerPage(); 
             }
         }
 
@@ -748,7 +592,7 @@
         };
 
         function simplifiedSetupAudioContext() {
-            if (!simplifiedAudioContext || simplifiedAudioContext.state === 'closed') {
+            if (!simplifiedAudioContext) {
                 simplifiedAudioContext = new (window.AudioContext || window.webkitAudioContext)();
                 simplifiedAnalyser = simplifiedAudioContext.createAnalyser();
                 simplifiedAnalyser.fftSize = 2048;
@@ -765,11 +609,6 @@
             simplifiedStatusDiv.textContent = 'Requesting microphone access...';
 
             try {
-                // Ensure context is running before connecting microphone
-                if (simplifiedAudioContext.state === 'suspended') {
-                    await simplifiedAudioContext.resume();
-                }
-
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 simplifiedMicrophone = simplifiedAudioContext.createMediaStreamSource(stream);
                 simplifiedMicrophone.connect(simplifiedAnalyser);
@@ -871,7 +710,7 @@
                 }
             }
 
-            const THRESHOLD = 100; // Minimum amplitude to consider a valid peak
+            const THRESHOLD = 100;
             if (maxAmplitude < THRESHOLD || maxIndex === -1) {
                 return null;
             }
@@ -917,7 +756,7 @@
 
         // --- Advanced Identifier Page Logic (adapted from second.html) ---
         let advancedAudioContext, advancedAnalyser, advancedMicrophone, advancedAnimationId, advancedIsListening = false;
-        let advancedScriptProcessor; // Renamed from advancedAudioProcessor to avoid confusion if tuner used ScriptProcessor
+        let advancedAudioProcessor;
 
         const advancedStartButton = document.getElementById('advanced-startButton');
         const advancedStopButton = document.getElementById('advanced-stopButton');
@@ -995,7 +834,7 @@
         precomputeChromaVectors(); // Call this once on script load
 
         function advancedSetupAudioContext() {
-            if (!advancedAudioContext || advancedAudioContext.state === 'closed') {
+            if (!advancedAudioContext) {
                 advancedAudioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: ADVANCED_SAMPLE_RATE });
                 advancedAnalyser = advancedAudioContext.createAnalyser();
                 advancedAnalyser.fftSize = ADVANCED_FFT_SIZE;
@@ -1003,11 +842,9 @@
                 advancedAnalyser.maxDecibels = -10;
                 advancedAnalyser.smoothingTimeConstant = 0.8;
 
-                // ScriptProcessorNode is deprecated, but kept here as per original advanced page logic.
-                // For a production app, this should also be moved to AudioWorklet.
-                advancedScriptProcessor = advancedAudioContext.createScriptProcessor(ADVANCED_AUTO_CORRELATION_BUFFER_SIZE, 1, 1);
-                advancedScriptProcessor.onaudioprocess = advancedHandleAudioProcess;
-                advancedScriptProcessor.connect(advancedAudioContext.destination); // Connect to destination to keep it active
+                advancedAudioProcessor = advancedAudioContext.createScriptProcessor(ADVANCED_AUTO_CORRELATION_BUFFER_SIZE, 1, 1);
+                advancedAudioProcessor.onaudioprocess = advancedHandleAudioProcess;
+                advancedAudioProcessor.connect(advancedAudioContext.destination);
             }
         }
 
@@ -1018,14 +855,10 @@
             advancedStatusDiv.textContent = 'Requesting microphone access...';
 
             try {
-                if (advancedAudioContext.state === 'suspended') {
-                    await advancedAudioContext.resume();
-                }
-
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 advancedMicrophone = advancedAudioContext.createMediaStreamSource(stream);
                 advancedMicrophone.connect(advancedAnalyser);
-                advancedMicrophone.connect(advancedScriptProcessor);
+                advancedMicrophone.connect(advancedAudioProcessor);
 
                 advancedIsListening = true;
                 advancedStartButton.disabled = true;
@@ -1050,10 +883,10 @@
                 advancedMicrophone.mediaStream.getTracks().forEach(track => track.stop());
                 advancedMicrophone = null;
             }
-            if (advancedScriptProcessor) {
-                advancedScriptProcessor.disconnect();
-                advancedScriptProcessor.onaudioprocess = null;
-                advancedScriptProcessor = null;
+            if (advancedAudioProcessor) {
+                advancedAudioProcessor.disconnect();
+                advancedAudioProcessor.onaudioprocess = null;
+                advancedAudioProcessor = null;
             }
             if (advancedAudioContext && advancedAudioContext.state !== 'closed') {
                 advancedAudioContext.close().then(() => {
@@ -1350,14 +1183,11 @@
             playWaveOutput.textContent = 'N/A';
         }
 
-        async function playTone(frequency, waveType, adsrParams, startAt = 0) {
+        function playTone(frequency, waveType, adsrParams, startAt = 0) {
             setupPlayAudioContext();
             if (!playAudioContext) {
                 alert("Web Audio API not supported or context could not be created.");
                 return;
-            }
-            if (playAudioContext.state === 'suspended') {
-                await playAudioContext.resume();
             }
 
             const now = playAudioContext.currentTime + startAt;
@@ -1482,285 +1312,6 @@
             playChordButton.removeEventListener('click', handlePlayChord);
         }
 
-        // --- NEW: Guitar Tuner Feature Logic (rewritten with AudioWorklet) ---
-        let tunerAudioContext = null;
-        let tunerMicrophone = null;
-        let tunerAudioWorkletNode = null;
-        let tunerIsListening = false;
-        let tunerPersistenceTimeout = null; // Timeout for UI persistence
-
-        const tunerStartButton = document.getElementById('tuner-startButton');
-        const tunerStopButton = document.getElementById('tuner-stopButton');
-        const tunerNoteDisplay = document.getElementById('tuner-note-display');
-        const tunerIndicator = document.getElementById('tuner-indicator');
-        const tunerStatusDiv = document.getElementById('tuner-status');
-        const tunerStringWrappers = document.querySelectorAll('#tuner-strings .string-wrapper');
-
-        const TUNER_PITCH_CONFIDENCE_THRESHOLD = 0.8; // Minimum confidence for pitch to be displayed
-        const TUNER_IN_TUNE_THRESHOLD_CENTS = 5; // How many cents off is considered "in tune"
-        const TUNER_DISPLAY_PERSISTENCE_MS = 1500; // How long to hold the display after a valid pitch
-
-        // Guitar string target frequencies (standard tuning EADGBe)
-        const GUITAR_STRINGS = [
-            { name: "E2", freq: 82.41, midi: 40 },
-            { name: "A2", freq: 110.00, midi: 45 },
-            { name: "D3", freq: 146.83, midi: 50 },
-            { name: "G3", freq: 196.00, midi: 55 },
-            { name: "B3", freq: 246.94, midi: 59 },
-            { name: "E4", freq: 329.63, midi: 64 }
-        ];
-
-        async function tunerSetupAudioContext() {
-            if (!tunerAudioContext || tunerAudioContext.state === 'closed') {
-                tunerAudioContext = new (window.AudioContext || window.webkitAudioContext)();
-                
-                // Add the AudioWorklet module
-                try {
-                    await tunerAudioContext.audioWorklet.addModule('tuner-audio-processor.js');
-                    console.log('Tuner: AudioWorklet module loaded.');
-                } catch (e) {
-                    console.error('Tuner: Error loading AudioWorklet module:', e);
-                    tunerStatusDiv.textContent = `Error loading audio processor: ${e.message}`;
-                    return false;
-                }
-
-                // Create the AudioWorkletNode
-                tunerAudioWorkletNode = new AudioWorkletNode(tunerAudioContext, 'tuner-audio-processor');
-                tunerAudioWorkletNode.connect(tunerAudioContext.destination); // Connect for passthrough (or just to keep alive)
-
-                // Listen for messages from the AudioWorkletProcessor
-                tunerAudioWorkletNode.port.onmessage = event => {
-                    if (tunerIsListening) {
-                        tunerUpdateUI(event.data);
-                    }
-                };
-                console.log('Tuner: AudioWorkletNode created and connected.');
-            }
-            return true;
-        }
-
-        async function tunerStartListening() {
-            if (tunerIsListening) return;
-
-            tunerStatusDiv.textContent = 'Requesting microphone access...';
-            tunerStartButton.disabled = true;
-            tunerStopButton.disabled = true; // Disable stop until mic is ready
-
-            const contextReady = await tunerSetupAudioContext();
-            if (!contextReady) {
-                tunerStartButton.disabled = false;
-                return;
-            }
-
-            try {
-                if (tunerAudioContext.state === 'suspended') {
-                    await tunerAudioContext.resume();
-                    console.log('Tuner: AudioContext resumed.');
-                }
-
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                tunerMicrophone = tunerAudioContext.createMediaStreamSource(stream);
-                tunerMicrophone.connect(tunerAudioWorkletNode);
-
-                tunerIsListening = true;
-                tunerStartButton.disabled = true;
-                tunerStopButton.disabled = false;
-                tunerResetUI(); // Reset UI state, but keep listening message
-                tunerStatusDiv.textContent = 'Listening...';
-                console.log('Tuner: Microphone connected to AudioWorklet.');
-
-            } catch (err) {
-                tunerStatusDiv.textContent = `Error accessing microphone: ${err.message}. Please allow microphone access.`;
-                console.error('Tuner: Error accessing microphone:', err);
-                tunerStartButton.disabled = false;
-                tunerStopButton.disabled = true;
-            }
-        }
-
-        function tunerStopListening() {
-            if (!tunerIsListening) return;
-
-            if (tunerMicrophone) {
-                tunerMicrophone.disconnect();
-                tunerMicrophone.mediaStream.getTracks().forEach(track => track.stop());
-                tunerMicrophone = null;
-            }
-            if (tunerAudioWorkletNode) {
-                tunerAudioWorkletNode.disconnect();
-                tunerAudioWorkletNode.port.onmessage = null; // Clean up message listener
-                tunerAudioWorkletNode = null;
-            }
-            
-            if (tunerAudioContext && tunerAudioContext.state !== 'closed') {
-                tunerAudioContext.close().then(() => {
-                    tunerAudioContext = null;
-                    console.log('Tuner: AudioContext closed.');
-                });
-            }
-
-            tunerIsListening = false;
-            tunerStartButton.disabled = false;
-            tunerStopButton.disabled = true;
-            tunerResetUI();
-            tunerStatusDiv.textContent = 'Stopped tuning.';
-        }
-        
-        // Finds the closest standard guitar string to the detected frequency
-        function tunerGetClosestGuitarString(frequency) {
-            if (frequency <= 0) return { target: null, deviationCents: Infinity };
-
-            let closestString = null;
-            let minDiffAbsCents = Infinity; // absolute difference in cents
-
-            for (const str of GUITAR_STRINGS) {
-                if (frequency > 0 && str.freq > 0) {
-                    const deviationCents = 1200 * Math.log2(frequency / str.freq);
-                    if (Math.abs(deviationCents) < minDiffAbsCents) {
-                        minDiffAbsCents = Math.abs(deviationCents);
-                        closestString = str;
-                    }
-                }
-            }
-
-            if (!closestString) return { target: null, deviationCents: Infinity };
-
-            const deviationCents = 1200 * Math.log2(frequency / closestString.freq);
-
-            return { target: closestString, deviationCents: deviationCents };
-        }
-
-        function tunerUpdateUI(pitchResult) {
-            const { frequency, confidence } = pitchResult;
-
-            // Remove previous tuning status classes from all elements
-            tunerStringWrappers.forEach(wrapper => wrapper.classList.remove('active', 'in-tune', 'flat', 'sharp'));
-            tunerIndicator.classList.remove('flat', 'sharp', 'in-tune');
-            tunerNoteDisplay.classList.remove('flat', 'sharp', 'in-tune');
-            tunerStatusDiv.classList.remove('flat', 'sharp', 'in-tune');
-
-
-            // 1. If valid pitch: Update UI and reset persistence timer
-            if (confidence >= TUNER_PITCH_CONFIDENCE_THRESHOLD && frequency > 0) {
-                if (tunerPersistenceTimeout) {
-                    clearTimeout(tunerPersistenceTimeout);
-                    tunerPersistenceTimeout = null;
-                }
-
-                const { target, deviationCents } = tunerGetClosestGuitarString(frequency);
-
-                const maxDeviationForDisplay = 100; // Only consider notes within +/- 1 semitone of a target string
-                if (!target || Math.abs(deviationCents) > maxDeviationForDisplay) {
-                    tunerNoteDisplay.textContent = `${frequencyToNote(frequency)?.name || '---'} (Out of Range)`;
-                    tunerStatusDiv.textContent = 'Out of typical guitar tuning range or not a standard string.';
-                    tunerIndicator.style.left = '50%'; // Reset indicator
-                } else {
-                    // Update detected note display
-                    tunerNoteDisplay.textContent = `${target.name} (${frequency.toFixed(2)} Hz)`;
-
-                    // Calculate indicator position
-                    const indicatorRangeCents = 50; // Visual range of the indicator
-                    let position = 50 + (deviationCents / indicatorRangeCents) * 50;
-                    position = Math.max(0, Math.min(100, position)); // Clamp between 0 and 100
-                    tunerIndicator.style.left = position + '%';
-
-                    // Update status and indicator color
-                    let statusText = '';
-                    let tuningStatusClass = '';
-
-                    if (Math.abs(deviationCents) < TUNER_IN_TUNE_THRESHOLD_CENTS) {
-                        statusText = '✅ In Tune!';
-                        tuningStatusClass = 'in-tune';
-                    } else if (deviationCents < 0) {
-                        statusText = `🔻 Flat by ${Math.abs(deviationCents).toFixed(1)} cents`;
-                        tuningStatusClass = 'flat';
-                    } else {
-                        statusText = `🔺 Sharp by ${deviationCents.toFixed(1)} cents`;
-                        tuningStatusClass = 'sharp';
-                    }
-                    tunerStatusDiv.textContent = statusText;
-                    tunerIndicator.classList.add(tuningStatusClass); // Apply class to indicator
-                    tunerNoteDisplay.classList.add(tuningStatusClass); // Apply class to note display
-                    tunerStatusDiv.classList.add(tuningStatusClass); // Apply class to status text
-
-                    // Update string wrappers visual feedback
-                    tunerStringWrappers.forEach(wrapper => {
-                        if (wrapper.dataset.targetNote === target.name) {
-                            wrapper.classList.add('active', tuningStatusClass);
-                        }
-                    });
-                }
-
-                // Set timeout to reset UI after a brief period of inactivity
-                tunerPersistenceTimeout = setTimeout(() => {
-                    tunerResetUI();
-                    tunerPersistenceTimeout = null; // Clear the timeout ID
-                }, TUNER_DISPLAY_PERSISTENCE_MS);
-
-            } else {
-                // 2. If no valid pitch AND no active persistence timer, then reset immediately.
-                //    Otherwise (if persistence timer is active), do nothing and let the timer expire.
-                if (!tunerPersistenceTimeout) {
-                    tunerResetUI();
-                }
-            }
-        }
-
-        function tunerResetUI() {
-            if (tunerPersistenceTimeout) { // Clear any pending reset
-                clearTimeout(tunerPersistenceTimeout);
-                tunerPersistenceTimeout = null;
-            }
-            tunerNoteDisplay.textContent = '---';
-            tunerStatusDiv.textContent = tunerIsListening ? 'No clear pitch detected. Pluck a string.' : 'Click "Start Tuning" to begin.';
-            tunerIndicator.style.left = '50%';
-            tunerIndicator.className = 'tuner-indicator'; // Reset class
-            tunerNoteDisplay.className = ''; // Remove any tuning status classes
-            tunerStatusDiv.className = 'status'; // Remove any tuning status classes, keep base class
-            tunerStringWrappers.forEach(wrapper => wrapper.classList.remove('active', 'in-tune', 'flat', 'sharp'));
-        }
-
-        function initTunerPage() {
-            tunerStartButton.addEventListener('click', tunerStartListening);
-            tunerStopButton.addEventListener('click', tunerStopListening);
-            tunerResetUI();
-            tunerStartButton.disabled = false;
-            tunerStopButton.disabled = true; // Disable stop until listening starts
-        }
-
-        function deinitTunerPage() {
-            tunerStopListening();
-            tunerStartButton.removeEventListener('click', tunerStartListening);
-            tunerStopButton.removeEventListener('click', tunerStopListening);
-        }
-
-        // --- Global AudioContext Lifecycle Management ---
-        document.addEventListener('visibilitychange', async () => {
-            if (document.visibilityState === 'visible') {
-                // When tab becomes visible, attempt to resume any active AudioContexts
-                if (simplifiedIsListening && simplifiedAudioContext && simplifiedAudioContext.state === 'suspended') {
-                    await simplifiedAudioContext.resume();
-                    console.log('Simplified: AudioContext resumed from background.');
-                }
-                if (advancedIsListening && advancedAudioContext && advancedAudioContext.state === 'suspended') {
-                    await advancedAudioContext.resume();
-                    console.log('Advanced: AudioContext resumed from background.');
-                }
-                if (tunerIsListening && tunerAudioContext && tunerAudioContext.state === 'suspended') {
-                    await tunerAudioContext.resume();
-                    console.log('Tuner: AudioContext resumed from background.');
-                }
-                if (activeOscillators.length > 0 && playAudioContext && playAudioContext.state === 'suspended') {
-                    await playAudioContext.resume();
-                    console.log('Play Note: AudioContext resumed from background.');
-                }
-            } else {
-                // When tab goes to background, browsers might suspend AudioContexts automatically,
-                // so no explicit `suspend()` call is strictly necessary for all contexts.
-                // For live input, the browser suspending is usually sufficient.
-            }
-        });
-
-
         // --- Initial Setup on DOM Load ---
         document.addEventListener('DOMContentLoaded', () => {
             // Set initial page and navigation link active
@@ -1797,3 +1348,223 @@
     </script>
 </body>
 </html>
+
+------------------------------------------------------------------------------------------------
+
+inspire and implement : 
+
+add a separate page for a guitar tuner feature where the user will be able to tune their guitars and It'll be great to look at, and it'll have a very user-friendly Easy to understand interface.
+
+Got it ✅ You want a **dedicated guitar tuner page** added to your project, with a **beautiful, user-friendly, easy-to-understand interface**.
+
+Here’s what we can do:
+
+### 🎸 Guitar Tuner Page Features
+
+1. **Microphone Input** – Detect sound from the user’s mic.
+2. **Pitch Detection** – Show the current note being played (E, A, D, G, B, e).
+3. **Target Note Guide** – Highlight whether the string is **Flat, Sharp, or In Tune**.
+4. **Clean UI** – Large readable text, minimal controls, easy for musicians.
+5. **Visual Indicator** – A meter/needle or colored bar for accuracy.
+6. **Responsive** – Works on desktop & mobile.
+
+---
+
+### 📄 Example: `guitar-tuner.html`
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Guitar Tuner</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #1a1a1a, #333);
+      color: #fff;
+      text-align: center;
+      padding: 30px;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+    #note {
+      font-size: 4rem;
+      margin: 20px 0;
+    }
+    #detector {
+      margin: 40px auto;
+      width: 300px;
+      height: 20px;
+      background: #555;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+    #indicator {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: 10px;
+      background: #00ff88;
+      left: 50%;
+      transform: translateX(-50%);
+      transition: left 0.1s ease;
+    }
+    .status {
+      margin-top: 15px;
+      font-size: 1.2rem;
+    }
+    button {
+      padding: 12px 20px;
+      font-size: 1rem;
+      margin-top: 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #00b894;
+      color: white;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #019374;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎸 Guitar Tuner</h1>
+  <p>Play a string and see if it's in tune!</p>
+
+  <div id="note">--</div>
+  <div id="detector">
+    <div id="indicator"></div>
+  </div>
+  <div class="status" id="status">Waiting for input...</div>
+
+  <button onclick="startTuner()">Start Tuning</button>
+
+  <script>
+    let audioContext, analyser, microphone, dataArray;
+
+    function startTuner() {
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          analyser = audioContext.createAnalyser();
+          microphone = audioContext.createMediaStreamSource(stream);
+          microphone.connect(analyser);
+
+          dataArray = new Float32Array(analyser.fftSize);
+          detectPitch();
+        })
+        .catch(err => {
+          alert("Microphone access denied.");
+        });
+    }
+
+    function autoCorrelate(buf, sampleRate) {
+      let SIZE = buf.length;
+      let rms = 0;
+      for (let i = 0; i < SIZE; i++) {
+        let val = buf[i];
+        rms += val * val;
+      }
+      rms = Math.sqrt(rms / SIZE);
+      if (rms < 0.01) return -1;
+
+      let r1 = 0, r2 = SIZE - 1, thres = 0.2;
+      for (let i = 0; i < SIZE / 2; i++)
+        if (Math.abs(buf[i]) < thres) { r1 = i; break; }
+      for (let i = 1; i < SIZE / 2; i++)
+        if (Math.abs(buf[SIZE - i]) < thres) { r2 = SIZE - i; break; }
+
+      buf = buf.slice(r1, r2);
+      SIZE = buf.length;
+
+      let c = new Array(SIZE).fill(0);
+      for (let i = 0; i < SIZE; i++)
+        for (let j = 0; j < SIZE - i; j++)
+          c[i] = c[i] + buf[j] * buf[j + i];
+
+      let d = 0; while (c[d] > c[d + 1]) d++;
+      let maxval = -1, maxpos = -1;
+      for (let i = d; i < SIZE; i++) {
+        if (c[i] > maxval) {
+          maxval = c[i]; maxpos = i;
+        }
+      }
+      let T0 = maxpos;
+      return sampleRate / T0;
+    }
+
+    function detectPitch() {
+      analyser.getFloatTimeDomainData(dataArray);
+      let pitch = autoCorrelate(dataArray, audioContext.sampleRate);
+
+      if (pitch !== -1) {
+        let note = getNote(pitch);
+        document.getElementById("note").innerText = note;
+        updateIndicator(pitch, note);
+      }
+      requestAnimationFrame(detectPitch);
+    }
+
+    function getNote(frequency) {
+      const notes = [
+        { note: "E2", freq: 82.41 },
+        { note: "A2", freq: 110.00 },
+        { note: "D3", freq: 146.83 },
+        { note: "G3", freq: 196.00 },
+        { note: "B3", freq: 246.94 },
+        { note: "E4", freq: 329.63 }
+      ];
+
+      let closest = notes.reduce((prev, curr) =>
+        Math.abs(curr.freq - frequency) < Math.abs(prev.freq - frequency) ? curr : prev
+      );
+      return closest.note;
+    }
+
+    function updateIndicator(frequency, note) {
+      const noteFreqs = {
+        "E2": 82.41, "A2": 110.00, "D3": 146.83,
+        "G3": 196.00, "B3": 246.94, "E4": 329.63
+      };
+
+      let target = noteFreqs[note];
+      let diff = frequency - target;
+      let offset = (diff / target) * 100;
+      let indicator = document.getElementById("indicator");
+
+      let position = 50 + offset;
+      position = Math.max(0, Math.min(100, position));
+      indicator.style.left = position + "%";
+
+      if (Math.abs(diff) < 1) {
+        document.getElementById("status").innerText = "✅ In Tune!";
+      } else if (diff > 0) {
+        document.getElementById("status").innerText = "🔺 Too Sharp";
+      } else {
+        document.getElementById("status").innerText = "🔻 Too Flat";
+      }
+    }
+  </script>
+</body>
+</html>
+```
+
+---
+
+👉 This gives you a **working tuner page** with:
+
+* Start button (mic permission)
+* Detected note display
+* Visual accuracy bar
+* Simple flat/sharp guidance
+
+---
+
+Would you like me to **link this tuner page into your main index.html navigation** (so users can open it from your dashboard), or keep it as a **standalone page**?
